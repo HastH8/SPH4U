@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, MessageCircle, Paperclip, Image as ImageIcon, Video, File, X, Download } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Send, MessageCircle, Paperclip, Image as ImageIcon, Video, File, X, Download, LogIn } from 'lucide-react'
 import { messages as initialMessages } from '../data/messages'
 import { users } from '../data/users'
 
@@ -15,6 +16,10 @@ export default function Chat() {
   const fileInputRef = useRef(null)
   const imageInputRef = useRef(null)
   const videoInputRef = useRef(null)
+  const navigate = useNavigate()
+  
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
+  const isLoggedIn = !!currentUser
 
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages))
@@ -95,11 +100,15 @@ export default function Chat() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (!isLoggedIn) {
+      navigate('/login')
+      return
+    }
     if (!newMessage.trim() && attachments.length === 0) return
 
     const message = {
       id: Date.now(),
-      userId: 1,
+      userId: currentUser.id,
       text: newMessage,
       attachments: attachments.map(a => ({
         type: a.type,
@@ -262,6 +271,24 @@ export default function Chat() {
         </div>
       </div>
 
+      {!isLoggedIn && (
+        <div className="bg-red-50 border-t border-red-200 px-4 py-3">
+          <div className="max-w-5xl mx-auto flex items-center gap-3">
+            <LogIn className="w-5 h-5 text-red-600 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-red-700 font-medium">Please log in to send messages</p>
+              <p className="text-xs text-red-600 mt-1">You need to be logged in to participate in the chat.</p>
+            </div>
+            <button
+              onClick={() => navigate('/login')}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+            >
+              Login
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white border-t border-gray-200">
         <div className="max-w-5xl mx-auto p-4">
           {attachments.length > 0 && (
@@ -303,14 +330,22 @@ export default function Chat() {
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
-                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                placeholder={isLoggedIn ? "Type a message..." : "Please log in to send messages..."}
+                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                disabled={!isLoggedIn}
               />
               <div className="absolute right-2 bottom-2">
                 <button
                   type="button"
-                  onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
-                  className="text-gray-500 hover:text-red-600 transition-colors p-1"
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      navigate('/login')
+                    } else {
+                      setShowAttachmentMenu(!showAttachmentMenu)
+                    }
+                  }}
+                  className="text-gray-500 hover:text-red-600 transition-colors p-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!isLoggedIn}
                 >
                   <Paperclip className="w-5 h-5" />
                 </button>
@@ -357,7 +392,8 @@ export default function Chat() {
             </div>
             <button
               type="submit"
-              className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center flex-shrink-0"
+              className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center flex-shrink-0 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={!isLoggedIn}
             >
               <Send className="w-5 h-5" />
             </button>
