@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Calendar as CalendarIcon, Plus, Edit2, X, Clock, MapPin } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Calendar as CalendarIcon, Plus, Edit2, X, Clock, MapPin, LogIn } from 'lucide-react'
 import { milestones as initialMilestones } from '../data/calendar'
 
 export default function Calendar() {
@@ -9,6 +10,10 @@ export default function Calendar() {
     return saved ? JSON.parse(saved) : initialMilestones
   })
   const [showEventModal, setShowEventModal] = useState(false)
+  const navigate = useNavigate()
+  
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
+  const isLoggedIn = !!currentUser
   const [editingEvent, setEditingEvent] = useState(null)
   const [selectedDate, setSelectedDate] = useState(null)
   const [formData, setFormData] = useState({
@@ -42,6 +47,10 @@ export default function Calendar() {
   }
 
   const handleDateClick = (day) => {
+    if (!isLoggedIn) {
+      navigate('/login')
+      return
+    }
     const date = new Date(year, month, day)
     const dateStr = date.toISOString().split('T')[0]
     setSelectedDate(dateStr)
@@ -56,6 +65,10 @@ export default function Calendar() {
   }
 
   const handleEditEvent = (event) => {
+    if (!isLoggedIn) {
+      navigate('/login')
+      return
+    }
     setEditingEvent(event)
     setFormData({
       title: event.title,
@@ -140,9 +153,9 @@ export default function Calendar() {
         <div
           key={day}
           onClick={() => handleDateClick(day)}
-          className={`h-24 p-1 border border-gray-200 cursor-pointer hover:bg-red-50 transition-colors ${
+          className={`h-24 p-1 border border-gray-200 transition-colors ${
             isToday ? 'bg-red-50 border-red-300' : 'bg-white'
-          }`}
+          } ${isLoggedIn ? 'cursor-pointer hover:bg-red-50' : 'cursor-not-allowed opacity-75'}`}
         >
           <div className={`text-sm font-medium ${isToday ? 'text-red-600' : 'text-gray-900'}`}>
             {day}
@@ -217,23 +230,44 @@ export default function Calendar() {
             </div>
             <button
               onClick={() => {
-                const today = new Date().toISOString().split('T')[0]
-                setSelectedDate(today)
-                setFormData({
-                  title: '',
-                  date: today,
-                  time: '14:00',
-                  description: ''
-                })
-                setEditingEvent(null)
-                setShowEventModal(true)
+                if (!isLoggedIn) {
+                  navigate('/login')
+                } else {
+                  const today = new Date().toISOString().split('T')[0]
+                  setSelectedDate(today)
+                  setFormData({
+                    title: '',
+                    date: today,
+                    time: '14:00',
+                    description: ''
+                  })
+                  setEditingEvent(null)
+                  setShowEventModal(true)
+                }
               }}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 font-medium"
+              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={!isLoggedIn}
             >
               <Plus className="w-5 h-5" />
               Add Event
             </button>
           </div>
+
+          {!isLoggedIn && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-center gap-3">
+              <LogIn className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-red-700 font-medium">Please log in to create events</p>
+                <p className="text-xs text-red-600 mt-1">You need to be logged in to add or edit calendar events.</p>
+              </div>
+              <button
+                onClick={() => navigate('/login')}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+              >
+                Login
+              </button>
+            </div>
+          )}
 
           <div className="bg-white rounded-xl card-shadow border border-gray-100 p-6 mb-6">
             <div className="flex items-center justify-between mb-6">
