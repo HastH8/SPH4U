@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { MessageSquare, Clock, Send, Image as ImageIcon, X, Maximize2, Minimize2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { MessageSquare, Clock, Send, Image as ImageIcon, X, Maximize2, Minimize2, LogIn } from 'lucide-react'
 import { posts as initialPosts } from '../data/posts'
 import { users } from '../data/users'
 
@@ -11,6 +12,10 @@ export default function Blog() {
     return saved ? JSON.parse(saved) : initialPosts
   })
   const [expandedPosts, setExpandedPosts] = useState({})
+  const navigate = useNavigate()
+  
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
+  const isLoggedIn = !!currentUser
 
   useEffect(() => {
     localStorage.setItem('blogPosts', JSON.stringify(blogPosts))
@@ -45,11 +50,15 @@ export default function Blog() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (!isLoggedIn) {
+      navigate('/login')
+      return
+    }
     if (!newPost.trim() && !newPostImage) return
 
     const post = {
       id: Date.now(),
-      userId: 1,
+      userId: currentUser.id,
       text: newPost,
       timestamp: new Date().toISOString(),
       image: newPostImage,
@@ -83,13 +92,29 @@ export default function Blog() {
           </div>
 
           <div className="bg-white rounded-xl p-4 sm:p-6 card-shadow mb-8 border border-gray-100">
+            {!isLoggedIn && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex items-center gap-3">
+                <LogIn className="w-5 h-5 text-red-600 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm text-red-700 font-medium">Please log in to post</p>
+                  <p className="text-xs text-red-600 mt-1">You need to be logged in to create blog posts.</p>
+                </div>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                >
+                  Login
+                </button>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <textarea
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
-                placeholder="What's on your mind? Share your thoughts, progress, or findings..."
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent resize-none text-sm sm:text-base"
+                placeholder={isLoggedIn ? "What's on your mind? Share your thoughts, progress, or findings..." : "Please log in to post..."}
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent resize-none text-sm sm:text-base disabled:bg-gray-100 disabled:cursor-not-allowed"
                 rows="4"
+                disabled={!isLoggedIn}
               />
               
               {newPostImage && (
@@ -110,21 +135,23 @@ export default function Blog() {
               )}
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <label className="cursor-pointer">
+                <label className={`cursor-pointer ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
                     className="hidden"
+                    disabled={!isLoggedIn}
                   />
-                  <div className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors text-sm sm:text-base">
+                  <div className={`flex items-center gap-2 text-gray-600 transition-colors text-sm sm:text-base ${isLoggedIn ? 'hover:text-red-600' : ''}`}>
                     <ImageIcon className="w-5 h-5" />
                     <span className="font-medium">Add Image</span>
                   </div>
                 </label>
                 <button
                   type="submit"
-                  className="bg-red-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-medium text-sm sm:text-base"
+                  className="bg-red-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-medium text-sm sm:text-base disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  disabled={!isLoggedIn}
                 >
                   <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                   Post
