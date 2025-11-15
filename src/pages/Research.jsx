@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { FileText, Upload, Download, X, Image as ImageIcon, File, Eye, EyeOff } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { FileText, Upload, Download, X, Image as ImageIcon, File, Eye, EyeOff, LogIn } from 'lucide-react'
 import { researchPapers as initialPapers } from '../data/research'
 
 export default function Research() {
@@ -8,6 +9,10 @@ export default function Research() {
     return saved ? JSON.parse(saved) : initialPapers
   })
   const [showUpload, setShowUpload] = useState(false)
+  const navigate = useNavigate()
+  
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
+  const isLoggedIn = !!currentUser
   const [viewingPaper, setViewingPaper] = useState(null)
   const [formData, setFormData] = useState({
     title: '',
@@ -75,10 +80,14 @@ export default function Research() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (!isLoggedIn) {
+      navigate('/login')
+      return
+    }
     const newPaper = {
       id: Date.now(),
       title: formData.title,
-      author: formData.author,
+      author: formData.author || currentUser.name,
       description: formData.description,
       content: formData.content,
       file: formData.file ? formData.file.name : null,
@@ -113,13 +122,36 @@ export default function Research() {
               <p className="text-xl text-gray-600">Upload and explore research documents</p>
             </div>
             <button
-              onClick={() => setShowUpload(true)}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 font-medium"
+              onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login')
+                } else {
+                  setShowUpload(true)
+                }
+              }}
+              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={!isLoggedIn}
             >
               <Upload className="w-5 h-5" />
               Upload Paper
             </button>
           </div>
+
+          {!isLoggedIn && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 flex items-center gap-3">
+              <LogIn className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-red-700 font-medium">Please log in to upload research papers</p>
+                <p className="text-xs text-red-600 mt-1">You need to be logged in to upload research documents.</p>
+              </div>
+              <button
+                onClick={() => navigate('/login')}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+              >
+                Login
+              </button>
+            </div>
+          )}
 
           {showUpload && (
             <div className="bg-white rounded-xl p-4 sm:p-6 card-shadow mb-8 border border-gray-100">
