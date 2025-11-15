@@ -1,10 +1,31 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { GraduationCap, Menu, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { GraduationCap, Menu, X, LogOut } from 'lucide-react'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const currentUser = localStorage.getItem('currentUser')
+      setIsLoggedIn(!!currentUser)
+    }
+    
+    checkLoginStatus()
+    window.addEventListener('storage', checkLoginStatus)
+    
+    return () => window.removeEventListener('storage', checkLoginStatus)
+  }, [location])
+
+  const handleSignOut = () => {
+    localStorage.removeItem('currentUser')
+    setIsLoggedIn(false)
+    navigate('/')
+    window.location.reload()
+  }
   
   const isActive = (path) => location.pathname === path
 
@@ -93,9 +114,19 @@ export default function Header() {
             >
               Team
             </Link>
-            <Link to="/login" className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium">
-              Login
-            </Link>
+            {isLoggedIn ? (
+              <button
+                onClick={handleSignOut}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            ) : (
+              <Link to="/login" className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                Login
+              </Link>
+            )}
           </nav>
 
           <button
@@ -186,9 +217,22 @@ export default function Header() {
               >
                 Team
               </Link>
-              <Link to="/login" className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium text-center" onClick={() => setMobileMenuOpen(false)}>
-                Login
-              </Link>
+              {isLoggedIn ? (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    handleSignOut()
+                  }}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium text-center flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              ) : (
+                <Link to="/login" className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium text-center" onClick={() => setMobileMenuOpen(false)}>
+                  Login
+                </Link>
+              )}
             </div>
           </nav>
         )}
