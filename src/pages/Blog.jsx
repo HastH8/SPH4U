@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { MessageSquare, Clock, Send, Image as ImageIcon, X, Maximize2, Minimize2, LogIn } from 'lucide-react'
 import { posts as initialPosts } from '../data/posts'
 import { users } from '../data/users'
+import { subscribeToPosts, addPost } from '../firebase/services'
 
 export default function Blog() {
   const [newPost, setNewPost] = useState('')
   const [newPostImage, setNewPostImage] = useState(null)
-  const [blogPosts, setBlogPosts] = useState(() => {
-    const saved = localStorage.getItem('blogPosts')
-    return saved ? JSON.parse(saved) : initialPosts
-  })
+  const [blogPosts, setBlogPosts] = useState([])
   const [expandedPosts, setExpandedPosts] = useState({})
   const navigate = useNavigate()
   
@@ -18,8 +16,16 @@ export default function Blog() {
   const isLoggedIn = !!currentUser
 
   useEffect(() => {
-    localStorage.setItem('blogPosts', JSON.stringify(blogPosts))
-  }, [blogPosts])
+    const unsubscribe = subscribeToPosts((firebasePosts) => {
+      const formattedPosts = firebasePosts.map(post => ({
+        ...post,
+        timestamp: post.timestamp?.toDate ? post.timestamp.toDate().toISOString() : post.timestamp || new Date().toISOString()
+      }))
+      setBlogPosts(formattedPosts.length > 0 ? formattedPosts : initialPosts)
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   const getUser = (userId) => users.find(u => u.id === userId) || users[0]
 
@@ -48,7 +54,7 @@ export default function Blog() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!isLoggedIn) {
       navigate('/login')
@@ -57,7 +63,6 @@ export default function Blog() {
     if (!newPost.trim() && !newPostImage) return
 
     const post = {
-      id: Date.now(),
       userId: currentUser.id,
       text: newPost,
       timestamp: new Date().toISOString(),
@@ -65,9 +70,14 @@ export default function Blog() {
       expanded: false
     }
 
-    setBlogPosts([post, ...blogPosts])
-    setNewPost('')
-    setNewPostImage(null)
+    try {
+      await addPost(post)
+      setNewPost('')
+      setNewPostImage(null)
+    } catch (error) {
+      console.error('Error creating post:', error)
+      alert('Failed to create post. Please try again.')
+    }
   }
 
   const toggleExpand = (postId) => {

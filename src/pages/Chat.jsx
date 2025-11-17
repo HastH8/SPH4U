@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { Send, MessageCircle, Paperclip, Image as ImageIcon, Video, File, X, Download, LogIn } from 'lucide-react'
 import { messages as initialMessages } from '../data/messages'
 import { users } from '../data/users'
+import { subscribeToMessages, addMessage } from '../firebase/services'
 
 export default function Chat() {
-  const [messages, setMessages] = useState(() => {
-    const saved = localStorage.getItem('chatMessages')
-    return saved ? JSON.parse(saved) : initialMessages
-  })
+  const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [attachments, setAttachments] = useState([])
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false)
@@ -22,8 +20,16 @@ export default function Chat() {
   const isLoggedIn = !!currentUser
 
   useEffect(() => {
-    localStorage.setItem('chatMessages', JSON.stringify(messages))
-  }, [messages])
+    const unsubscribe = subscribeToMessages((firebaseMessages) => {
+      const formattedMessages = firebaseMessages.map(msg => ({
+        ...msg,
+        timestamp: msg.timestamp?.toDate ? msg.timestamp.toDate().toISOString() : msg.timestamp || new Date().toISOString()
+      }))
+      setMessages(formattedMessages.length > 0 ? formattedMessages : initialMessages)
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -98,7 +104,7 @@ export default function Chat() {
     setAttachments(attachments.filter(a => a.id !== id))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!isLoggedIn) {
       navigate('/login')
@@ -107,7 +113,6 @@ export default function Chat() {
     if (!newMessage.trim() && attachments.length === 0) return
 
     const message = {
-      id: Date.now(),
       userId: currentUser.id,
       text: newMessage,
       attachments: attachments.map(a => ({
@@ -120,10 +125,15 @@ export default function Chat() {
       timestamp: new Date().toISOString()
     }
 
-    setMessages([...messages, message])
-    setNewMessage('')
-    setAttachments([])
-    setShowAttachmentMenu(false)
+    try {
+      await addMessage(message)
+      setNewMessage('')
+      setAttachments([])
+      setShowAttachmentMenu(false)
+    } catch (error) {
+      console.error('Error sending message:', error)
+      alert('Failed to send message. Please try again.')
+    }
   }
 
   const groupedMessages = messages.reduce((groups, message) => {

@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Calendar as CalendarIcon, Plus, Edit2, X, Clock, MapPin, LogIn } from 'lucide-react'
 import { milestones as initialMilestones } from '../data/calendar'
+import { subscribeToEvents, addEvent, updateEvent, deleteEvent } from '../firebase/services'
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [events, setEvents] = useState(() => {
-    const saved = localStorage.getItem('calendarEvents')
-    return saved ? JSON.parse(saved) : initialMilestones
-  })
+  const [events, setEvents] = useState([])
   const [showEventModal, setShowEventModal] = useState(false)
   const navigate = useNavigate()
   
@@ -24,8 +22,12 @@ export default function Calendar() {
   })
 
   useEffect(() => {
-    localStorage.setItem('calendarEvents', JSON.stringify(events))
-  }, [events])
+    const unsubscribe = subscribeToEvents((firebaseEvents) => {
+      setEvents(firebaseEvents.length > 0 ? firebaseEvents : initialMilestones)
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
@@ -79,31 +81,38 @@ export default function Calendar() {
     setShowEventModal(true)
   }
 
-  const handleSaveEvent = (e) => {
+  const handleSaveEvent = async (e) => {
     e.preventDefault()
-    if (editingEvent) {
-      setEvents(events.map(e => 
-        e.id === editingEvent.id 
-          ? { ...editingEvent, ...formData }
-          : e
-      ))
-    } else {
-      const newEvent = {
-        id: Date.now(),
-        ...formData,
-        status: 'upcoming'
+    try {
+      if (editingEvent) {
+        await updateEvent(editingEvent.id, {
+          ...formData,
+          status: editingEvent.status || 'upcoming'
+        })
+      } else {
+        await addEvent({
+          ...formData,
+          status: 'upcoming'
+        })
       }
-      setEvents([...events, newEvent])
+      setShowEventModal(false)
+      setEditingEvent(null)
+      setFormData({ title: '', date: '', time: '', description: '' })
+    } catch (error) {
+      console.error('Error saving event:', error)
+      alert('Failed to save event. Please try again.')
     }
-    setShowEventModal(false)
-    setEditingEvent(null)
-    setFormData({ title: '', date: '', time: '', description: '' })
   }
 
-  const handleDeleteEvent = (eventId) => {
-    setEvents(events.filter(e => e.id !== eventId))
-    setShowEventModal(false)
-    setEditingEvent(null)
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      await deleteEvent(eventId)
+      setShowEventModal(false)
+      setEditingEvent(null)
+    } catch (error) {
+      console.error('Error deleting event:', error)
+      alert('Failed to delete event. Please try again.')
+    }
   }
 
   const changeMonth = (direction) => {

@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FileText, Upload, Download, X, Image as ImageIcon, File, Eye, EyeOff, LogIn } from 'lucide-react'
 import { researchPapers as initialPapers } from '../data/research'
+import { subscribeToResearchPapers, addResearchPaper } from '../firebase/services'
 
 export default function Research() {
-  const [papers, setPapers] = useState(() => {
-    const saved = localStorage.getItem('researchPapers')
-    return saved ? JSON.parse(saved) : initialPapers
-  })
+  const [papers, setPapers] = useState([])
   const [showUpload, setShowUpload] = useState(false)
   const navigate = useNavigate()
   
@@ -24,9 +22,14 @@ export default function Research() {
     images: []
   })
 
+  // Subscribe to real-time research papers from Firebase
   useEffect(() => {
-    localStorage.setItem('researchPapers', JSON.stringify(papers))
-  }, [papers])
+    const unsubscribe = subscribeToResearchPapers((firebasePapers) => {
+      setPapers(firebasePapers.length > 0 ? firebasePapers : initialPapers)
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -78,14 +81,13 @@ export default function Research() {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!isLoggedIn) {
       navigate('/login')
       return
     }
     const newPaper = {
-      id: Date.now(),
       title: formData.title,
       author: formData.author || currentUser.name,
       description: formData.description,
@@ -94,19 +96,25 @@ export default function Research() {
       fileType: formData.file ? 'PDF' : 'Text',
       fileSize: formData.file ? `${(formData.file.size / 1024 / 1024).toFixed(2)} MB` : 'N/A',
       images: formData.images,
-      uploadDate: new Date().toISOString().split('T')[0]
+      uploadDate: new Date().toISOString().split('T')[0],
+      timestamp: new Date().toISOString()
     }
-    setPapers([newPaper, ...papers])
-    setFormData({
-      title: '',
-      author: '',
-      description: '',
-      content: '',
-      file: null,
-      filePreview: null,
-      images: []
-    })
-    setShowUpload(false)
+    try {
+      await addResearchPaper(newPaper)
+      setFormData({
+        title: '',
+        author: '',
+        description: '',
+        content: '',
+        file: null,
+        filePreview: null,
+        images: []
+      })
+      setShowUpload(false)
+    } catch (error) {
+      console.error('Error uploading research paper:', error)
+      alert('Failed to upload research paper. Please try again.')
+    }
   }
 
   return (
