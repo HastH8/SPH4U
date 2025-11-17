@@ -25,7 +25,11 @@ export default function Chat() {
         ...msg,
         timestamp: msg.timestamp?.toDate ? msg.timestamp.toDate().toISOString() : msg.timestamp || new Date().toISOString()
       }))
-      setMessages(formattedMessages.length > 0 ? formattedMessages : initialMessages)
+      // Sort messages chronologically (oldest first) for chat display
+      const sortedMessages = formattedMessages.length > 0 
+        ? formattedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        : initialMessages
+      setMessages(sortedMessages)
     })
 
     return () => unsubscribe()
@@ -112,10 +116,19 @@ export default function Chat() {
     }
     if (!newMessage.trim() && attachments.length === 0) return
 
+    // Store message data before clearing
+    const messageText = newMessage
+    const messageAttachments = [...attachments]
+    
+    // Clear input immediately for better UX
+    setNewMessage('')
+    setAttachments([])
+    setShowAttachmentMenu(false)
+
     const message = {
       userId: currentUser.id,
-      text: newMessage,
-      attachments: attachments.map(a => ({
+      text: messageText,
+      attachments: messageAttachments.map(a => ({
         type: a.type,
         preview: a.preview,
         name: a.name,
@@ -127,12 +140,12 @@ export default function Chat() {
 
     try {
       await addMessage(message)
-      setNewMessage('')
-      setAttachments([])
-      setShowAttachmentMenu(false)
     } catch (error) {
       console.error('Error sending message:', error)
-      alert('Failed to send message. Please try again.')
+      // Restore message if send failed
+      setNewMessage(messageText)
+      setAttachments(messageAttachments)
+      alert('Failed to send message. Please check your connection and try again.')
     }
   }
 

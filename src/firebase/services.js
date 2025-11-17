@@ -22,6 +22,12 @@ export const getCollection = async (collectionName) => {
     }))
   } catch (error) {
     console.error(`Error getting ${collectionName}:`, error)
+    // Handle specific Firebase errors
+    if (error.code === 'failed-precondition') {
+      console.error('Missing Firestore index. Please create the required index in Firebase Console.')
+    } else if (error.code === 'permission-denied') {
+      console.error('Permission denied. Check your Firestore security rules.')
+    }
     return []
   }
 }
@@ -35,6 +41,12 @@ export const addToCollection = async (collectionName, data) => {
     return docRef.id
   } catch (error) {
     console.error(`Error adding to ${collectionName}:`, error)
+    // Provide helpful error messages
+    if (error.code === 'permission-denied') {
+      throw new Error('Permission denied. Check your Firestore security rules.')
+    } else if (error.code === 'unavailable') {
+      throw new Error('Firebase is unavailable. Check your internet connection.')
+    }
     throw error
   }
 }
@@ -60,18 +72,30 @@ export const deleteDocument = async (collectionName, docId) => {
 }
 
 export const subscribeToCollection = (collectionName, callback) => {
-  const q = query(collection(db, collectionName), orderBy('timestamp', 'desc'))
-  
-  return onSnapshot(q, (querySnapshot) => {
-    const data = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }))
-    callback(data)
-  }, (error) => {
-    console.error(`Error listening to ${collectionName}:`, error)
+  try {
+    const q = query(collection(db, collectionName), orderBy('timestamp', 'desc'))
+    
+    return onSnapshot(q, (querySnapshot) => {
+      const data = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      callback(data)
+    }, (error) => {
+      console.error(`Error listening to ${collectionName}:`, error)
+      // If it's a permission error, show helpful message
+      if (error.code === 'permission-denied') {
+        console.error('Firestore permission denied. Check your security rules.')
+      } else if (error.code === 'failed-precondition') {
+        console.error('Firestore index missing. Create the required index in Firebase Console.')
+      }
+      callback([])
+    })
+  } catch (error) {
+    console.error(`Error setting up listener for ${collectionName}:`, error)
     callback([])
-  })
+    return () => {} // Return empty unsubscribe function
+  }
 }
 
 export const getMessages = () => getCollection('messages')
@@ -99,16 +123,25 @@ export const addEvent = (event) => addToCollection('events', event)
 export const updateEvent = (eventId, data) => updateDocument('events', eventId, data)
 export const deleteEvent = (eventId) => deleteDocument('events', eventId)
 export const subscribeToEvents = (callback) => {
-  return onSnapshot(collection(db, 'events'), (querySnapshot) => {
-    const data = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }))
-    callback(data)
-  }, (error) => {
-    console.error('Error listening to events:', error)
+  try {
+    return onSnapshot(collection(db, 'events'), (querySnapshot) => {
+      const data = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      callback(data)
+    }, (error) => {
+      console.error('Error listening to events:', error)
+      if (error.code === 'permission-denied') {
+        console.error('Firestore permission denied. Check your security rules.')
+      }
+      callback([])
+    })
+  } catch (error) {
+    console.error('Error setting up events listener:', error)
     callback([])
-  })
+    return () => {} // Return empty unsubscribe function
+  }
 }
 
 export const getResearchPapers = () => getCollection('researchPapers')
@@ -132,15 +165,27 @@ export const addVideo = (video) => addToCollection('videos', video)
 export const updateVideo = (videoId, data) => updateDocument('videos', videoId, data)
 export const deleteVideo = (videoId) => deleteDocument('videos', videoId)
 export const subscribeToVideos = (callback) => {
-  return onSnapshot(collection(db, 'videos'), (querySnapshot) => {
-    const data = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }))
-    callback(data)
-  }, (error) => {
-    console.error('Error listening to videos:', error)
+  try {
+    const q = query(collection(db, 'videos'), orderBy('timestamp', 'desc'))
+    return onSnapshot(q, (querySnapshot) => {
+      const data = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      callback(data)
+    }, (error) => {
+      console.error('Error listening to videos:', error)
+      if (error.code === 'permission-denied') {
+        console.error('Firestore permission denied. Check your security rules.')
+      } else if (error.code === 'failed-precondition') {
+        console.error('Missing Firestore index. Create the required index in Firebase Console.')
+      }
+      callback([])
+    })
+  } catch (error) {
+    console.error('Error setting up videos listener:', error)
     callback([])
-  })
+    return () => {} // Return empty unsubscribe function
+  }
 }
 
