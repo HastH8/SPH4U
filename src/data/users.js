@@ -16,26 +16,26 @@ export const users = [
     avatar: '👨‍🏫',
     email: 'mr.hill@tlk.ca',
     password: 'mr.hill2024'
-  }
-  /* {
-    id: 1,
-    name: 'Alex Chen',
+  },
+   {
+    id: 3,
+    name: 'Abdulrahmen Badr',
     role: 'Student',
-    bio: 'Passionate about quantum mechanics and experimental physics.',
+    bio: '',
     avatar: '👨‍🔬',
-    email: 'alex.chen@student.tlk.ca',
-    password: 'alex2024'
+    email: 'abdulrahmen@student.tlk.ca',
+    password: 'kulkhara2026'
   },
   {
     id: 2,
-    name: 'Sarah Johnson',
+    name: 'Qais Qademeral',
     role: 'Student',
-    bio: 'Interested in thermodynamics and energy systems.',
-    avatar: '👩‍🔬',
-    email: 'sarah.johnson@student.tlk.ca',
-    password: 'sarah2024'
-  },
-  {
+    bio: '',
+    avatar: '👨‍🔬',
+    email: 'qaisqademeral@student.tlk.ca',
+    password: 'mybitch2026'
+  }
+/*  {
     id: 3,
     name: 'Michael Park',
     role: 'Student',
