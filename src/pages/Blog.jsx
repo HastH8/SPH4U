@@ -1,241 +1,275 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { MessageSquare, Clock, Send, Image as ImageIcon, X, Maximize2, Minimize2, LogIn } from 'lucide-react'
-import { posts as initialPosts } from '../data/posts'
-import { users } from '../data/users'
-import { subscribeToPosts, addPost } from '../firebase/services'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+	MessageSquare,
+	Clock,
+	Send,
+	Image as ImageIcon,
+	X,
+	Maximize2,
+	Minimize2,
+	LogIn,
+} from "lucide-react";
+import { posts as initialPosts } from "../data/posts";
+import { users } from "../data/users";
+import { subscribeToPosts, addPost } from "../firebase/services";
 
 export default function Blog() {
-  const [newPost, setNewPost] = useState('')
-  const [newPostImage, setNewPostImage] = useState(null)
-  const [blogPosts, setBlogPosts] = useState([])
-  const [expandedPosts, setExpandedPosts] = useState({})
-  const navigate = useNavigate()
-  
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
-  const isLoggedIn = !!currentUser
+	const [newPost, setNewPost] = useState("");
+	const [newPostImage, setNewPostImage] = useState(null);
+	const [blogPosts, setBlogPosts] = useState([]);
+	const [expandedPosts, setExpandedPosts] = useState({});
+	const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = subscribeToPosts((firebasePosts) => {
-      const formattedPosts = firebasePosts.map(post => ({
-        ...post,
-        timestamp: post.timestamp?.toDate ? post.timestamp.toDate().toISOString() : post.timestamp || new Date().toISOString()
-      }))
-      setBlogPosts(formattedPosts.length > 0 ? formattedPosts : initialPosts)
-    })
+	const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+	const isLoggedIn = !!currentUser;
 
-    return () => unsubscribe()
-  }, [])
+	useEffect(() => {
+		const unsubscribe = subscribeToPosts((firebasePosts) => {
+			const formattedPosts = firebasePosts.map((post) => ({
+				...post,
+				timestamp: post.timestamp?.toDate
+					? post.timestamp.toDate().toISOString()
+					: post.timestamp || new Date().toISOString(),
+			}));
+			setBlogPosts(formattedPosts.length > 0 ? formattedPosts : initialPosts);
+		});
 
-  const getUser = (userId) => users.find(u => u.id === userId) || users[0]
+		return () => unsubscribe();
+	}, []);
 
-  const formatTime = (timestamp) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diff = now - date
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    const days = Math.floor(diff / 86400000)
+	const getUser = (userId) => users.find((u) => u.id === userId) || users[0];
 
-    if (minutes < 60) return `${minutes}m ago`
-    if (hours < 24) return `${hours}h ago`
-    if (days < 7) return `${days}d ago`
-    return date.toLocaleDateString()
-  }
+	const formatTime = (timestamp) => {
+		const date = new Date(timestamp);
+		const now = new Date();
+		const diff = now - date;
+		const minutes = Math.floor(diff / 60000);
+		const hours = Math.floor(diff / 3600000);
+		const days = Math.floor(diff / 86400000);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0]
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setNewPostImage(reader.result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+		if (minutes < 60) return `${minutes}m ago`;
+		if (hours < 24) return `${hours}h ago`;
+		if (days < 7) return `${days}d ago`;
+		return date.toLocaleDateString();
+	};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!isLoggedIn) {
-      navigate('/login')
-      return
-    }
-    if (!newPost.trim() && !newPostImage) return
+	const handleImageUpload = (e) => {
+		const file = e.target.files[0];
+		if (file && file.type.startsWith("image/")) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setNewPostImage(reader.result);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
 
-    const post = {
-      userId: currentUser.id,
-      text: newPost,
-      timestamp: new Date().toISOString(),
-      image: newPostImage,
-      expanded: false
-    }
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		if (!isLoggedIn) {
+			navigate("/login");
+			return;
+		}
+		if (!newPost.trim() && !newPostImage) return;
 
-    try {
-      await addPost(post)
-      setNewPost('')
-      setNewPostImage(null)
-    } catch (error) {
-      console.error('Error creating post:', error)
-      alert('Failed to create post. Please try again.')
-    }
-  }
+		const post = {
+			userId: currentUser.id,
+			text: newPost,
+			timestamp: new Date().toISOString(),
+			image: newPostImage,
+			expanded: false,
+		};
 
-  const toggleExpand = (postId) => {
-    setExpandedPosts(prev => ({
-      ...prev,
-      [postId]: !prev[postId]
-    }))
-  }
+		try {
+			await addPost(post);
+			setNewPost("");
+			setNewPostImage(null);
+		} catch (error) {
+			console.error("Error creating post:", error);
+			alert("Failed to create post. Please try again.");
+		}
+	};
 
-  const shouldTruncate = (text) => text.length > 200
+	const toggleExpand = (postId) => {
+		setExpandedPosts((prev) => ({
+			...prev,
+			[postId]: !prev[postId],
+		}));
+	};
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex-1">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
-              <MessageSquare className="w-10 h-10 text-red-600" />
-              Blog Feed
-            </h1>
-            <p className="text-xl text-gray-600">Share updates and progress with your team</p>
-          </div>
+	const shouldTruncate = (text) => text.length > 200;
 
-          <div className="bg-white rounded-xl p-4 sm:p-6 card-shadow mb-8 border border-gray-100">
-            {!isLoggedIn && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex items-center gap-3">
-                <LogIn className="w-5 h-5 text-red-600 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm text-red-700 font-medium">Please log in to post</p>
-                  <p className="text-xs text-red-600 mt-1">You need to be logged in to create blog posts.</p>
-                </div>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-                >
-                  Login
-                </button>
-              </div>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <textarea
-                value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
-                placeholder={isLoggedIn ? "What's on your mind? Share your thoughts, progress, or findings..." : "Please log in to post..."}
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent resize-none text-sm sm:text-base disabled:bg-gray-100 disabled:cursor-not-allowed"
-                rows="4"
-                disabled={!isLoggedIn}
-              />
-              
-              {newPostImage && (
-                <div className="relative">
-                  <img
-                    src={newPostImage}
-                    alt="Preview"
-                    className="w-full rounded-lg max-h-48 sm:max-h-64 object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setNewPostImage(null)}
-                    className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
+	return (
+		<div className="min-h-screen flex flex-col">
+			<div className="flex-1">
+				<div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+					<div className="text-center mb-8">
+						<h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
+							<MessageSquare className="w-10 h-10 text-red-600" />
+							Blog Feed
+						</h1>
+						<p className="text-xl text-gray-600">
+							Share updates and progress with your team
+						</p>
+					</div>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <label className={`cursor-pointer ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    disabled={!isLoggedIn}
-                  />
-                  <div className={`flex items-center gap-2 text-gray-600 transition-colors text-sm sm:text-base ${isLoggedIn ? 'hover:text-red-600' : ''}`}>
-                    <ImageIcon className="w-5 h-5" />
-                    <span className="font-medium">Add Image</span>
-                  </div>
-                </label>
-                <button
-                  type="submit"
-                  className="bg-red-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-medium text-sm sm:text-base disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  disabled={!isLoggedIn}
-                >
-                  <Send className="w-4 h-4 sm:w-5 sm:h-5" />
-                  Post
-                </button>
-              </div>
-            </form>
-          </div>
+					<div className="page-card p-4 sm:p-6 mb-8">
+						{!isLoggedIn && (
+							<div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex items-center gap-3">
+								<LogIn className="w-5 h-5 text-red-600 flex-shrink-0" />
+								<div className="flex-1">
+									<p className="text-sm text-red-700 font-medium">
+										Please log in to post
+									</p>
+									<p className="text-xs text-red-600 mt-1">
+										You need to be logged in to create blog posts.
+									</p>
+								</div>
+								<button
+									onClick={() => navigate("/login")}
+									className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+								>
+									Login
+								</button>
+							</div>
+						)}
+						<form onSubmit={handleSubmit} className="space-y-4">
+							<textarea
+								value={newPost}
+								onChange={(e) => setNewPost(e.target.value)}
+								placeholder={
+									isLoggedIn
+										? "What's on your mind? Share your thoughts, progress, or findings..."
+										: "Please log in to post..."
+								}
+								className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent resize-none text-sm sm:text-base disabled:bg-gray-100 disabled:cursor-not-allowed"
+								rows="4"
+								disabled={!isLoggedIn}
+							/>
 
-          <div className="space-y-6">
-            {blogPosts.map((post) => {
-              const user = getUser(post.userId)
-              const isExpanded = expandedPosts[post.id]
-              const needsTruncation = shouldTruncate(post.text)
-              const displayText = isExpanded || !needsTruncation 
-                ? post.text 
-                : post.text.substring(0, 200) + '...'
+							{newPostImage && (
+								<div className="relative">
+									<img
+										src={newPostImage}
+										alt="Preview"
+										className="w-full rounded-lg max-h-48 sm:max-h-64 object-cover"
+									/>
+									<button
+										type="button"
+										onClick={() => setNewPostImage(null)}
+										className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70 transition-colors"
+									>
+										<X className="w-4 h-4" />
+									</button>
+								</div>
+							)}
 
-              return (
-                <div
-                  key={post.id}
-                  className="bg-white rounded-xl p-4 sm:p-6 card-shadow hover:card-shadow-hover transition-all border border-gray-100"
-                >
-                  <div className="flex items-start gap-3 sm:gap-4">
-                    <div className="bg-red-100 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
-                      {user.avatar}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{user.name}</h3>
-                        <span className="text-sm text-gray-500 hidden sm:inline">•</span>
-                        <div className="flex items-center gap-1 text-gray-500 text-xs sm:text-sm">
-                          <Clock className="w-3 h-3" />
-                          <span>{formatTime(post.timestamp)}</span>
-                        </div>
-                      </div>
-                      <div className="text-gray-700 leading-relaxed whitespace-pre-wrap break-words text-sm sm:text-base">
-                        <p className="break-words">{displayText}</p>
-                        {needsTruncation && (
-                          <button
-                            onClick={() => toggleExpand(post.id)}
-                            className="text-red-600 hover:text-red-700 font-medium mt-2 flex items-center gap-1 text-sm sm:text-base"
-                          >
-                            {isExpanded ? (
-                              <>
-                                <Minimize2 className="w-4 h-4" />
-                                Show Less
-                              </>
-                            ) : (
-                              <>
-                                <Maximize2 className="w-4 h-4" />
-                                Read More
-                              </>
-                            )}
-                          </button>
-                        )}
-                      </div>
-                      {post.image && (
-                        <div className="mt-4 rounded-lg overflow-hidden">
-                          <img
-                            src={post.image}
-                            alt="Post attachment"
-                            className="w-full h-auto max-h-64 sm:max-h-96 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                            onClick={() => window.open(post.image, '_blank')}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+							<div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+								<label
+									className={`cursor-pointer ${
+										!isLoggedIn ? "opacity-50 cursor-not-allowed" : ""
+									}`}
+								>
+									<input
+										type="file"
+										accept="image/*"
+										onChange={handleImageUpload}
+										className="hidden"
+										disabled={!isLoggedIn}
+									/>
+									<div
+										className={`flex items-center gap-2 text-gray-600 transition-colors text-sm sm:text-base ${
+											isLoggedIn ? "hover:text-red-600" : ""
+										}`}
+									>
+										<ImageIcon className="w-5 h-5" />
+										<span className="font-medium">Add Image</span>
+									</div>
+								</label>
+								<button
+									type="submit"
+									className="btn-primary flex items-center justify-center gap-2 font-medium text-sm sm:text-base disabled:opacity-60 disabled:cursor-not-allowed px-4 sm:px-6 py-2 sm:py-3"
+									disabled={!isLoggedIn}
+								>
+									<Send className="w-4 h-4 sm:w-5 sm:h-5" />
+									Post
+								</button>
+							</div>
+						</form>
+					</div>
+
+					<div className="space-y-6">
+						{blogPosts.map((post) => {
+							const user = getUser(post.userId);
+							const isExpanded = expandedPosts[post.id];
+							const needsTruncation = shouldTruncate(post.text);
+							const displayText =
+								isExpanded || !needsTruncation
+									? post.text
+									: post.text.substring(0, 200) + "...";
+
+							return (
+								<div
+									key={post.id}
+									className="page-card p-4 sm:p-6 transition-all"
+								>
+									<div className="flex items-start gap-3 sm:gap-4">
+										<div className="bg-red-100 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
+											{user.avatar}
+										</div>
+										<div className="flex-1 min-w-0">
+											<div className="flex flex-wrap items-center gap-2 mb-2">
+												<h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+													{user.name}
+												</h3>
+												<span className="text-sm text-gray-500 hidden sm:inline">
+													•
+												</span>
+												<div className="flex items-center gap-1 text-gray-500 text-xs sm:text-sm">
+													<Clock className="w-3 h-3" />
+													<span>{formatTime(post.timestamp)}</span>
+												</div>
+											</div>
+											<div className="text-gray-700 leading-relaxed whitespace-pre-wrap break-words text-sm sm:text-base">
+												<p className="break-words">{displayText}</p>
+												{needsTruncation && (
+													<button
+														onClick={() => toggleExpand(post.id)}
+														className="text-red-600 hover:text-red-700 font-medium mt-2 flex items-center gap-1 text-sm sm:text-base"
+													>
+														{isExpanded ? (
+															<>
+																<Minimize2 className="w-4 h-4" />
+																Show Less
+															</>
+														) : (
+															<>
+																<Maximize2 className="w-4 h-4" />
+																Read More
+															</>
+														)}
+													</button>
+												)}
+											</div>
+											{post.image && (
+												<div className="mt-4 rounded-lg overflow-hidden">
+													<img
+														src={post.image}
+														alt="Post attachment"
+														className="w-full h-auto max-h-64 sm:max-h-96 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+														onClick={() => window.open(post.image, "_blank")}
+													/>
+												</div>
+											)}
+										</div>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }

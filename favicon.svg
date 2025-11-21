@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="School logo">
+  <rect width="64" height="64" rx="12" fill="#fff"/>
+  <g transform="translate(8 12)">
+    <path d="M24 0L0 8l24 8 24-8L24 0z" fill="#c62828"/>
+    <rect x="8" y="14" width="32" height="18" rx="2" fill="#c62828"/>
+    <rect x="12" y="18" width="8" height="10" rx="1" fill="#fff"/>
+    <rect x="28" y="18" width="8" height="10" rx="1" fill="#fff"/>
+  </g>
+</svg>

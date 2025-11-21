@@ -3,18 +3,96 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-white text-gray-900;
-  }
+	:root {
+		--brand-red: #c62828; /* base brand red */
+		--brand-red-600: #b71c1c;
+		--brand-accent: #ff6b6b;
+		--muted: #6b7280;
+	}
+
+	body {
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+			"Helvetica Neue", Arial;
+		@apply bg-white text-gray-900 antialiased;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
 }
 
 @layer utilities {
-  .card-shadow {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .card-shadow-hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  }
+	.card-shadow {
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.card-shadow-hover {
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+	}
+
+	.glass-nav {
+		background-color: rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+	}
 }
 
+@layer components {
+	.app-bg {
+		background: radial-gradient(
+				1200px 400px at 10% 10%,
+				rgba(198, 40, 40, 0.04),
+				transparent 8%
+			),
+			radial-gradient(
+				900px 300px at 90% 90%,
+				rgba(198, 40, 40, 0.03),
+				transparent 8%
+			),
+			linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+	}
+
+	.page-card {
+		border-radius: 12px;
+		background: linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.9),
+			rgba(255, 255, 255, 0.85)
+		);
+		border: 1px solid rgba(0, 0, 0, 0.04);
+		box-shadow: 0 8px 30px rgba(16, 24, 40, 0.06);
+	}
+
+	.btn-primary {
+		background-color: var(--brand-red);
+		color: white;
+		padding: 0.5rem 1rem;
+		border-radius: 10px;
+		font-weight: 600;
+		box-shadow: 0 6px 18px rgba(198, 40, 40, 0.12);
+	}
+
+	.btn-primary:hover {
+		background-color: var(--brand-red-600);
+	}
+
+	input,
+	textarea,
+	select {
+		border-radius: 10px;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		padding: 0.5rem 0.75rem;
+		transition: box-shadow 0.12s ease, border-color 0.12s ease;
+	}
+
+	input:focus,
+	textarea:focus,
+	select:focus {
+		outline: none;
+		box-shadow: 0 6px 18px rgba(198, 40, 40, 0.12);
+		border-color: var(--brand-red);
+	}
+
+	.modal-backdrop {
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.48));
+	}
+}
