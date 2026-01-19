@@ -10,7 +10,7 @@ import Home from "./pages/Home";
 import Calendar from "./pages/Calendar";
 import Blog from "./pages/Blog";
 import Research from "./pages/Research";
-import Videos from "./pages/Videos";
+import Presentation from "./pages/Presentation";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import Team from "./pages/Team";
@@ -28,7 +28,8 @@ function AppContent() {
 					<Route path="/calendar" element={<Calendar />} />
 					<Route path="/blog" element={<Blog />} />
 					<Route path="/research" element={<Research />} />
-					<Route path="/videos" element={<Videos />} />
+					<Route path="/presentation" element={<Presentation />} />
+					<Route path="/videos" element={<Presentation />} />
 					<Route path="/chat" element={<Chat />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/team" element={<Team />} />

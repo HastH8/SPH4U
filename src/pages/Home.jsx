@@ -79,7 +79,7 @@ export default function Home() {
 						</Link>
 
 						<Link
-							to="/videos"
+							to="/presentation"
 							className="page-card p-6 transition-all group hover:scale-[1.01]"
 						>
 							<div className="flex items-center justify-between mb-4">
@@ -89,10 +89,10 @@ export default function Home() {
 								<ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-red-600 transition-colors" />
 							</div>
 							<h3 className="text-xl font-semibold text-gray-900 mb-2">
-								Video Library
+								Presentation
 							</h3>
 							<p className="text-gray-600">
-								Watch experiments and presentations
+								Run the full slideshow with visuals
 							</p>
 						</Link>
 

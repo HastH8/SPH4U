@@ -181,14 +181,14 @@ export default function Header() {
 							Research
 						</Link>
 						<Link
-							to="/videos"
+							to="/presentation"
 							className={`font-medium transition-colors ${
-								isActive("/videos")
+								isActive("/presentation")
 									? "text-red-600 border-b-2 border-red-600 pb-1"
 									: "text-gray-700 hover:text-red-600"
 							}`}
 						>
-							Videos
+							Presentation
 						</Link>
 						<Link
 							to="/chat"
@@ -288,15 +288,15 @@ export default function Header() {
 								Research
 							</Link>
 							<Link
-								to="/videos"
+								to="/presentation"
 								className={`font-medium transition-colors pl-2 ${
-									isActive("/videos")
+									isActive("/presentation")
 										? "text-red-600 border-l-4 border-red-600"
 										: "text-gray-700 hover:text-red-600"
 								}`}
 								onClick={() => setMobileMenuOpen(false)}
 							>
-								Videos
+								Presentation
 							</Link>
 							<Link
 								to="/chat"

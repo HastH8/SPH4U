@@ -1,14 +1,16 @@
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  doc, 
-  updateDoc, 
-  deleteDoc, 
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
   onSnapshot,
   query,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
+  setDoc,
+  getDoc
 } from 'firebase/firestore'
 import { db } from './config'
 
@@ -189,3 +191,52 @@ export const subscribeToVideos = (callback) => {
   }
 }
 
+const PRESENTATION_DECK_ID = 'main'
+
+export const subscribeToPresentationDeck = (callback) => {
+  try {
+    const deckRef = doc(db, 'presentationDecks', PRESENTATION_DECK_ID)
+    return onSnapshot(deckRef, (docSnap) => {
+      if (docSnap.exists()) {
+        callback(docSnap.data())
+      } else {
+        callback(null)
+      }
+    }, (error) => {
+      console.error('Error listening to presentation deck:', error)
+      callback(null)
+    })
+  } catch (error) {
+    console.error('Error setting up presentation deck listener:', error)
+    callback(null)
+    return () => {}
+  }
+}
+
+export const getPresentationDeck = async () => {
+  try {
+    const deckRef = doc(db, 'presentationDecks', PRESENTATION_DECK_ID)
+    const docSnap = await getDoc(deckRef)
+    return docSnap.exists() ? docSnap.data() : null
+  } catch (error) {
+    console.error('Error fetching presentation deck:', error)
+    return null
+  }
+}
+
+export const savePresentationDeck = async (deck) => {
+  try {
+    const deckRef = doc(db, 'presentationDecks', PRESENTATION_DECK_ID)
+    await setDoc(
+      deckRef,
+      {
+        ...deck,
+        updatedAt: serverTimestamp()
+      },
+      { merge: true }
+    )
+  } catch (error) {
+    console.error('Error saving presentation deck:', error)
+    throw error
+  }
+}
