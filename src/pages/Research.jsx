@@ -15,6 +15,8 @@ import { researchPapers as initialPapers } from "../data/research";
 import {
 	subscribeToResearchPapers,
 	addResearchPaper,
+	updateResearchPaper,
+	deleteResearchPaper,
 } from "../firebase/services";
 
 export default function Research() {
@@ -25,6 +27,8 @@ export default function Research() {
 	const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 	const isLoggedIn = !!currentUser;
 	const [viewingPaper, setViewingPaper] = useState(null);
+	const [isEditingContent, setIsEditingContent] = useState(false);
+	const [editedContent, setEditedContent] = useState("");
 	const [formData, setFormData] = useState({
 		title: "",
 		author: "",
@@ -43,6 +47,13 @@ export default function Research() {
 
 		return () => unsubscribe();
 	}, []);
+
+	useEffect(() => {
+		if (viewingPaper) {
+			setIsEditingContent(false);
+			setEditedContent(viewingPaper.content || "");
+		}
+	}, [viewingPaper]);
 
 	const formatDate = (dateString) => {
 		const date = new Date(dateString);
@@ -129,6 +140,52 @@ export default function Research() {
 		} catch (error) {
 			console.error("Error uploading research paper:", error);
 			alert("Failed to upload research paper. Please try again.");
+		}
+	};
+
+	const handleEditContent = () => {
+		if (!viewingPaper) return;
+		setEditedContent(viewingPaper.content || "");
+		setIsEditingContent(true);
+	};
+
+	const handleSaveContent = async () => {
+		if (!viewingPaper) return;
+		try {
+			await updateResearchPaper(viewingPaper.id, {
+				content: editedContent,
+				updatedAt: new Date().toISOString(),
+			});
+			setPapers((prev) =>
+				prev.map((paper) =>
+					paper.id === viewingPaper.id
+						? { ...paper, content: editedContent }
+						: paper
+				)
+			);
+			setViewingPaper({ ...viewingPaper, content: editedContent });
+			setIsEditingContent(false);
+		} catch (error) {
+			console.error("Error updating research paper:", error);
+			alert("Failed to update research paper. Please try again.");
+		}
+	};
+
+	const handleDeletePaper = async (paperId) => {
+		if (!isLoggedIn) return;
+		const confirmed = window.confirm(
+			"Delete this research paper? This cannot be undone."
+		);
+		if (!confirmed) return;
+		try {
+			await deleteResearchPaper(paperId);
+			setPapers((prev) => prev.filter((paper) => paper.id !== paperId));
+			if (viewingPaper && viewingPaper.id === paperId) {
+				setViewingPaper(null);
+			}
+		} catch (error) {
+			console.error("Error deleting research paper:", error);
+			alert("Failed to delete research paper. Please try again.");
 		}
 	};
 
@@ -447,16 +504,64 @@ export default function Research() {
 									{viewingPaper.description}
 								</p>
 							</div>
-							{viewingPaper.content && (
-								<div>
-									<h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
-										Content
-									</h3>
+							{isLoggedIn && (
+								<div className="flex flex-col sm:flex-row gap-2">
+									{!isEditingContent ? (
+										<button
+											onClick={handleEditContent}
+											className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium"
+										>
+											Edit Content
+										</button>
+									) : (
+										<>
+											<button
+												onClick={handleSaveContent}
+												className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+											>
+												Save
+											</button>
+											<button
+												onClick={() => {
+													setIsEditingContent(false);
+													setEditedContent(viewingPaper.content || "");
+												}}
+												className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium"
+											>
+												Cancel
+											</button>
+										</>
+									)}
+									<button
+										onClick={() => handleDeletePaper(viewingPaper.id)}
+										className="bg-red-50 text-red-700 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
+									>
+										Delete
+									</button>
+								</div>
+							)}
+							<div>
+								<h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
+									Content
+								</h3>
+								{isEditingContent ? (
+									<textarea
+										value={editedContent}
+										onChange={(e) => setEditedContent(e.target.value)}
+										className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 text-sm sm:text-base"
+										rows="8"
+										placeholder="Update the full content, abstract, methodology, findings, etc..."
+									/>
+								) : viewingPaper.content ? (
 									<div className="text-gray-700 whitespace-pre-wrap leading-relaxed bg-gray-50 p-3 sm:p-4 rounded-lg text-sm sm:text-base break-words overflow-x-auto">
 										{viewingPaper.content}
 									</div>
-								</div>
-							)}
+								) : (
+									<p className="text-sm sm:text-base text-gray-500">
+										No content yet.
+									</p>
+								)}
+							</div>
 							{viewingPaper.images && viewingPaper.images.length > 0 && (
 								<div>
 									<h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">

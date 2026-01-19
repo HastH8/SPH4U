@@ -8,11 +8,43 @@ import {
   onSnapshot,
   query,
   orderBy,
+  limit,
   serverTimestamp,
+  Timestamp,
   setDoc,
   getDoc
 } from 'firebase/firestore'
 import { db } from './config'
+import { posts as seedPosts } from '../data/posts'
+import { messages as seedMessages } from '../data/messages'
+
+const seededCollections = new Set()
+
+const seedCollectionIfEmpty = async (collectionName, seedItems) => {
+  if (seededCollections.has(collectionName)) return
+  seededCollections.add(collectionName)
+
+  try {
+    const q = query(collection(db, collectionName), limit(1))
+    const snapshot = await getDocs(q)
+    if (!snapshot.empty) return
+
+    await Promise.all(
+      seedItems.map((item) => {
+        const { id, ...data } = item
+        const timestamp = data.timestamp
+          ? Timestamp.fromDate(new Date(data.timestamp))
+          : serverTimestamp()
+        return addDoc(collection(db, collectionName), {
+          ...data,
+          timestamp
+        })
+      })
+    )
+  } catch (error) {
+    console.error(`Error seeding ${collectionName}:`, error)
+  }
+}
 
 export const getCollection = async (collectionName) => {
   try {
@@ -102,11 +134,17 @@ export const subscribeToCollection = (collectionName, callback) => {
 
 export const getMessages = () => getCollection('messages')
 export const addMessage = (message) => addToCollection('messages', message)
-export const subscribeToMessages = (callback) => subscribeToCollection('messages', callback)
+export const subscribeToMessages = (callback) => {
+  seedCollectionIfEmpty('messages', seedMessages)
+  return subscribeToCollection('messages', callback)
+}
 
 export const getPosts = () => getCollection('posts')
 export const addPost = (post) => addToCollection('posts', post)
-export const subscribeToPosts = (callback) => subscribeToCollection('posts', callback)
+export const subscribeToPosts = (callback) => {
+  seedCollectionIfEmpty('posts', seedPosts)
+  return subscribeToCollection('posts', callback)
+}
 
 export const getEvents = async () => {
   try {
@@ -148,6 +186,8 @@ export const subscribeToEvents = (callback) => {
 
 export const getResearchPapers = () => getCollection('researchPapers')
 export const addResearchPaper = (paper) => addToCollection('researchPapers', paper)
+export const updateResearchPaper = (paperId, data) => updateDocument('researchPapers', paperId, data)
+export const deleteResearchPaper = (paperId) => deleteDocument('researchPapers', paperId)
 export const subscribeToResearchPapers = (callback) => subscribeToCollection('researchPapers', callback)
 
 export const getVideos = async () => {
