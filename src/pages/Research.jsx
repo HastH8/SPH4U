@@ -23,6 +23,7 @@ export default function Research() {
 	const [papers, setPapers] = useState([]);
 	const [showUpload, setShowUpload] = useState(false);
 	const navigate = useNavigate();
+	const [authorFilter, setAuthorFilter] = useState("all");
 
 	const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 	const isLoggedIn = !!currentUser;
@@ -54,6 +55,71 @@ export default function Research() {
 			setEditedContent(viewingPaper.content || "");
 		}
 	}, [viewingPaper]);
+
+	const authorOptions = [
+		{ value: "all", label: "All authors" },
+		{ value: "hast", label: "Hast Khalil" },
+		{ value: "qais", label: "Qais Qadermal" },
+		{ value: "abdulrahmen", label: "Abdelrahman" },
+	];
+
+	const normalizeAuthor = (author = "") =>
+		author.toLowerCase().replace(/[^a-z]/g, "");
+
+	const getAuthorGroup = (author = "") => {
+		const normalized = normalizeAuthor(author);
+		if (normalized.includes("hastkhalil")) return "hast";
+		if (normalized.includes("qais")) return "qais";
+		if (
+			normalized.includes("abdulrahmen") ||
+			normalized.includes("abdelrahman") ||
+			normalized.includes("abdulrahman")
+		) {
+			return "abdulrahmen";
+		}
+		return "other";
+	};
+
+	const getAuthorRank = (author = "") => {
+		const group = getAuthorGroup(author);
+		if (group === "hast" || group === "qais") return 0;
+		if (group === "abdulrahmen") return 2;
+		return 1;
+	};
+
+	const getPaperTimestamp = (paper) => {
+		if (paper?.timestamp?.toDate) return paper.timestamp.toDate().getTime();
+		if (paper?.timestamp) return new Date(paper.timestamp).getTime();
+		if (paper?.uploadDate) return new Date(paper.uploadDate).getTime();
+		return 0;
+	};
+
+	const getScatterKey = (paper) => {
+		const base = `${paper?.id || ""}|${paper?.title || ""}|${paper?.author || ""}`;
+		let hash = 0;
+		for (let i = 0; i < base.length; i += 1) {
+			hash = (hash * 31 + base.charCodeAt(i)) >>> 0;
+		}
+		return hash;
+	};
+
+	const filteredPapers = papers.filter((paper) => {
+		if (authorFilter === "all") return true;
+		return getAuthorGroup(paper.author) === authorFilter;
+	});
+
+	const sortedPapers = [...filteredPapers].sort((a, b) => {
+		const rankA = getAuthorRank(a.author);
+		const rankB = getAuthorRank(b.author);
+		if (rankA !== rankB) return rankA - rankB;
+		if (rankA === 0) {
+			return getPaperTimestamp(b) - getPaperTimestamp(a);
+		}
+		if (rankA === 1) {
+			return getScatterKey(a) - getScatterKey(b);
+		}
+		return getScatterKey(a) - getScatterKey(b);
+	});
 
 	const formatDate = (dateString) => {
 		const date = new Date(dateString);
@@ -203,20 +269,38 @@ export default function Research() {
 								Upload and explore research documents
 							</p>
 						</div>
-						<button
-							onClick={() => {
-								if (!isLoggedIn) {
-									navigate("/login");
-								} else {
-									setShowUpload(true);
-								}
-							}}
-							className="btn-primary flex items-center gap-2 font-medium px-6 py-3 disabled:opacity-60 disabled:cursor-not-allowed"
-							disabled={!isLoggedIn}
-						>
-							<Upload className="w-5 h-5" />
-							Upload Paper
-						</button>
+						<div className="flex flex-col sm:flex-row sm:items-center gap-3">
+							<div className="flex items-center gap-2">
+								<label className="text-sm font-medium text-gray-600">
+									Filter by author
+								</label>
+								<select
+									value={authorFilter}
+									onChange={(e) => setAuthorFilter(e.target.value)}
+									className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
+								>
+									{authorOptions.map((option) => (
+										<option key={option.value} value={option.value}>
+											{option.label}
+										</option>
+									))}
+								</select>
+							</div>
+							<button
+								onClick={() => {
+									if (!isLoggedIn) {
+										navigate("/login");
+									} else {
+										setShowUpload(true);
+									}
+								}}
+								className="btn-primary flex items-center gap-2 font-medium px-6 py-3 disabled:opacity-60 disabled:cursor-not-allowed"
+								disabled={!isLoggedIn}
+							>
+								<Upload className="w-5 h-5" />
+								Upload Paper
+							</button>
+						</div>
 					</div>
 
 					{!isLoggedIn && (
@@ -416,7 +500,7 @@ export default function Research() {
 					)}
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-						{papers.map((paper) => (
+						{sortedPapers.map((paper) => (
 							<div
 								key={paper.id}
 								className="page-card p-4 sm:p-6 transition-all"

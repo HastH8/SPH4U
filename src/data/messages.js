@@ -31,33 +31,33 @@ export const messages = [
   },
   {
     id: 6,
-    userId: 2,
-    text: "Good start. Make sure your idea connects to at least two units and plan a safe, testable experiment.",
-    timestamp: "2025-11-08T09:05:00"
-  },
-  {
-    id: 7,
     userId: 3,
     text: "I found a small car chassis kit and a basic IMU (MPU6050). We can start prototyping.",
     timestamp: "2025-11-12T18:20:00"
   },
   {
-    id: 8,
+    id: 7,
     userId: 1,
     text: "Conference #1 done. Mr Hill said the ball idea might be risky, so car makes more sense.",
     timestamp: "2025-11-18T13:30:00"
   },
   {
-    id: 9,
+    id: 8,
     userId: 4,
-    text: "Found sources on IMUs, friction, and encoder accuracy. I will do the APA citations tonight.",
-    timestamp: "2025-11-22T20:10:00"
+    text: "I made a parts list: chassis, encoder, IMU, motor driver, extra wheels. Keeping it low budget.",
+    timestamp: "2025-11-21T18:00:00"
+  },
+  {
+    id: 9,
+    userId: 3,
+    text: "We should order tonight so it arrives before end of month.",
+    timestamp: "2025-11-22T10:15:00"
   },
   {
     id: 10,
-    userId: 2,
-    text: "Conference #2: bring two quality sources each and a clear experiment plan.",
-    timestamp: "2025-11-25T15:05:00"
+    userId: 4,
+    text: "Found sources on IMUs, friction, and encoder accuracy. I will do the APA citations tonight.",
+    timestamp: "2025-11-22T20:10:00"
   },
   {
     id: 11,
@@ -68,47 +68,59 @@ export const messages = [
   {
     id: 12,
     userId: 3,
-    text: "First car test: it rolls fine but the data is noisy. We need filtering and a cleaner mount.",
-    timestamp: "2025-12-04T16:25:00"
+    text: "Parts arrived. Built the car but the wheels are rubbing the frame.",
+    timestamp: "2025-12-03T16:25:00"
   },
   {
     id: 13,
+    userId: 3,
+    text: "Fixed wheel stopping by adding washers/spacers and straightening the axle.",
+    timestamp: "2025-12-04T16:25:00"
+  },
+  {
+    id: 14,
+    userId: 1,
+    text: "Did a friction test on tile vs carpet. Carpet kills the speed way faster.",
+    timestamp: "2025-12-08T15:10:00"
+  },
+  {
+    id: 15,
     userId: 4,
     text: "Dashboard is live. It shows speed, acceleration, and distance every 0.2 seconds.",
     timestamp: "2025-12-10T19:10:00"
   },
   {
-    id: 14,
+    id: 16,
     userId: 1,
     text: "Conference #3 went fine. Experiment plan locked: surfaces, added mass, and slope angle.",
     timestamp: "2025-12-16T14:50:00"
   },
   {
-    id: 15,
+    id: 17,
+    userId: 4,
+    text: "We trimmed extra plastic and moved the battery lower. Car feels lighter now.",
+    timestamp: "2025-12-22T16:40:00"
+  },
+  {
+    id: 18,
     userId: 3,
     text: "Working on a data table template. We will run 3 trials for each setup.",
     timestamp: "2026-01-03T11:10:00"
   },
   {
-    id: 16,
-    userId: 2,
-    text: "By Conference #4 you should have 6 sources, a complete site, and final experiment plan.",
-    timestamp: "2026-01-06T15:20:00"
-  },
-  {
-    id: 17,
+    id: 19,
     userId: 4,
     text: "Graphs are looking clean. The acceleration curve peaks early then drops like we expected.",
     timestamp: "2026-01-09T18:30:00"
   },
   {
-    id: 18,
+    id: 20,
     userId: 1,
     text: "Final week soon. Let's record the experiment and start the slides.",
     timestamp: "2026-01-15T12:05:00"
   },
   {
-    id: 19,
+    id: 21,
     userId: 3,
     text: "Experiment day. I will bring the car, batteries, and the laptop.",
     timestamp: "2026-01-20T09:20:00"

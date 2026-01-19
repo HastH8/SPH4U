@@ -19,6 +19,7 @@ export default function Blog() {
 	const [newPostImage, setNewPostImage] = useState(null);
 	const [blogPosts, setBlogPosts] = useState([]);
 	const [expandedPosts, setExpandedPosts] = useState({});
+	const [authorFilter, setAuthorFilter] = useState("all");
 	const navigate = useNavigate();
 
 	const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
@@ -39,6 +40,13 @@ export default function Blog() {
 	}, []);
 
 	const getUser = (userId) => users.find((u) => u.id === userId) || users[0];
+
+	const authorOptions = [
+		{ value: "all", label: "All authors" },
+		{ value: "1", label: "Hast Khalil" },
+		{ value: "4", label: "Qais Qadermal" },
+		{ value: "3", label: "Abdelrahman" },
+	];
 
 	const formatTime = (timestamp) => {
 		const date = new Date(timestamp);
@@ -99,6 +107,10 @@ export default function Blog() {
 	};
 
 	const shouldTruncate = (text) => text.length > 200;
+	const filteredPosts = blogPosts.filter((post) => {
+		if (authorFilter === "all") return true;
+		return post.userId === Number(authorFilter);
+	});
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -112,6 +124,22 @@ export default function Blog() {
 						<p className="text-xl text-gray-600">
 							Share updates and progress with your team
 						</p>
+						<div className="mt-4 flex items-center justify-center gap-2">
+							<label className="text-sm font-medium text-gray-600">
+								Filter by author
+							</label>
+							<select
+								value={authorFilter}
+								onChange={(e) => setAuthorFilter(e.target.value)}
+								className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
+							>
+								{authorOptions.map((option) => (
+									<option key={option.value} value={option.value}>
+										{option.label}
+									</option>
+								))}
+							</select>
+						</div>
 					</div>
 
 					<div className="page-card p-4 sm:p-6 mb-8">
@@ -200,7 +228,7 @@ export default function Blog() {
 					</div>
 
 					<div className="space-y-6">
-						{blogPosts.map((post) => {
+						{filteredPosts.map((post) => {
 							const user = getUser(post.userId);
 							const isExpanded = expandedPosts[post.id];
 							const needsTruncation = shouldTruncate(post.text);
