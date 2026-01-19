@@ -17,6 +17,7 @@ import {
 import { db } from './config'
 import { posts as seedPosts } from '../data/posts'
 import { messages as seedMessages } from '../data/messages'
+import { milestones as seedEvents } from '../data/calendar'
 
 const seededCollections = new Set()
 
@@ -164,6 +165,7 @@ export const updateEvent = (eventId, data) => updateDocument('events', eventId, 
 export const deleteEvent = (eventId) => deleteDocument('events', eventId)
 export const subscribeToEvents = (callback) => {
   try {
+    seedCollectionIfEmpty('events', seedEvents)
     return onSnapshot(collection(db, 'events'), (querySnapshot) => {
       const data = querySnapshot.docs.map(doc => ({
         id: doc.id,
