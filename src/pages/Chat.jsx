@@ -28,6 +28,7 @@ export default function Chat() {
 
 	const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 	const isLoggedIn = !!currentUser;
+	const blockedUserIds = new Set([2]);
 
 	useEffect(() => {
 		const unsubscribe = subscribeToMessages((firebaseMessages) => {
@@ -37,13 +38,19 @@ export default function Chat() {
 					? msg.timestamp.toDate().toISOString()
 					: msg.timestamp || new Date().toISOString(),
 			}));
+			const filteredMessages = formattedMessages.filter(
+				(msg) => !blockedUserIds.has(msg.userId)
+			);
+			const fallbackMessages = initialMessages.filter(
+				(msg) => !blockedUserIds.has(msg.userId)
+			);
 			// Sort messages chronologically (oldest first) for chat display
 			const sortedMessages =
-				formattedMessages.length > 0
-					? formattedMessages.sort(
+				filteredMessages.length > 0
+					? filteredMessages.sort(
 							(a, b) => new Date(a.timestamp) - new Date(b.timestamp)
 					  )
-					: initialMessages;
+					: fallbackMessages;
 			setMessages(sortedMessages);
 		});
 
