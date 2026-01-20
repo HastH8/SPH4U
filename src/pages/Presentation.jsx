@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, PlayCircle } from "lucide-react";
 import {
 	subscribeToPresentationDeck,
@@ -1105,15 +1105,13 @@ export default function Presentation() {
 		[index, slidesState],
 	);
 
-	useEffect(() => {
-		if (!isFullscreen) {
-			setSlideIntro(true);
-			return;
-		}
-		setSlideIntro(false);
-		const id = requestAnimationFrame(() => setSlideIntro(true));
-		return () => cancelAnimationFrame(id);
-	}, [activeSlide?.id, isFullscreen]);
+useLayoutEffect(() => {
+	setSlideIntro(false);
+	const id = requestAnimationFrame(() => {
+		requestAnimationFrame(() => setSlideIntro(true));
+	});
+	return () => cancelAnimationFrame(id);
+}, [activeSlide?.id]);
 
 	const updateSlide = (patch) => {
 		setSlidesState((prev) =>
@@ -1179,7 +1177,7 @@ export default function Presentation() {
 		"hast-2",
 	]);
 	const shouldZoomOut = isFullscreen && zoomOutSlideIds.has(activeSlide?.id);
-	const baseScale = shouldZoomOut ? 0.84 : 1;
+	const baseScale = shouldZoomOut ? 0.78 : 1;
 
 	const transitionVariants = [
 		"fade",
@@ -1224,6 +1222,7 @@ export default function Presentation() {
 		baseScale,
 		slideIntro,
 	);
+	const shouldAnimate = !editMode;
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -1276,7 +1275,7 @@ export default function Presentation() {
 						ref={stageRef}
 						className={
 							isFullscreen
-								? "fixed inset-0 bg-black text-white z-50 flex flex-col"
+								? "fixed inset-0 bg-gradient-to-br from-[#0b0b12] via-[#10131d] to-[#210b0b] text-white z-50 flex flex-col"
 								: ""
 						}
 					>
@@ -1305,11 +1304,11 @@ export default function Presentation() {
 							<div
 								className={
 									isFullscreen
-										? "w-full max-w-6xl transition-all duration-500 ease-out origin-center will-change-transform"
-										: ""
+										? "w-[92vw] max-w-[1400px] transition-all duration-500 ease-out origin-center will-change-transform"
+										: "transition-all duration-500 ease-out origin-center"
 								}
 								style={
-									isFullscreen
+									shouldAnimate
 										? { transform: slideTransform, opacity: slideIntro ? 1 : 0 }
 										: undefined
 								}
