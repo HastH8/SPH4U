@@ -122,8 +122,8 @@ const defaultSlides = [
 				text: "IMU range and sampling can miss sharp collision peaks.",
 			},
 			{
-				title: "Rotation to linear speed",
-				text: "v = omega * r works only when wheels do not slip.",
+				title: "Wheel speed and slip",
+				text: "Encoder speed only matches car speed when wheels do not slip.",
 			},
 		],
 		visual: "research",
@@ -277,6 +277,12 @@ const defaultSlides = [
 			"Run straight-line test and show acceleration",
 			"Trigger collision and show impact spike",
 		],
+		checklistItems: [
+			"WiFi connected",
+			"Dashboard open",
+			"Run acceleration test",
+			"Show collision spike",
+		],
 		visual: "checklist",
 		visualPosition: "right",
 	},
@@ -356,7 +362,14 @@ const VisualHero = () => (
 						<stop offset="1" stopColor="#ffffff" />
 					</linearGradient>
 				</defs>
-				<rect x="20" y="20" width="480" height="220" rx="18" fill="url(#heroGlow)" />
+				<rect
+					x="20"
+					y="20"
+					width="480"
+					height="220"
+					rx="18"
+					fill="url(#heroGlow)"
+				/>
 				<rect x="120" y="120" width="280" height="60" rx="18" fill="#fca5a5" />
 				<rect x="160" y="100" width="200" height="40" rx="12" fill="#fecaca" />
 				<circle cx="170" cy="190" r="26" fill="#111827" />
@@ -372,11 +385,23 @@ const VisualPhysics = () => (
 	<VisualFrame>
 		<svg viewBox="0 0 520 260" className="w-full h-full">
 			<rect x="30" y="30" width="460" height="200" rx="16" fill="#fef2f2" />
-			<line x1="80" y1="190" x2="440" y2="190" stroke="#ef4444" strokeWidth="4" />
+			<line
+				x1="80"
+				y1="190"
+				x2="440"
+				y2="190"
+				stroke="#ef4444"
+				strokeWidth="4"
+			/>
 			<line x1="80" y1="190" x2="80" y2="60" stroke="#ef4444" strokeWidth="4" />
-			<path d="M80 190 Q210 60 440 90" fill="none" stroke="#111827" strokeWidth="4" />
-			<circle cx="210" cy="120" r="8" fill="#ef4444" />
-			<circle cx="320" cy="110" r="8" fill="#ef4444" />
+			<polyline
+				points="80,190 160,140 240,110 320,120 400,100 440,90"
+				fill="none"
+				stroke="#111827"
+				strokeWidth="4"
+			/>
+			<circle cx="160" cy="140" r="8" fill="#ef4444" />
+			<circle cx="320" cy="120" r="8" fill="#ef4444" />
 		</svg>
 	</VisualFrame>
 );
@@ -388,8 +413,22 @@ const VisualPipeline = () => (
 				<rect x="30" y="60" width="110" height="80" rx="14" fill="#fee2e2" />
 				<rect x="205" y="60" width="110" height="80" rx="14" fill="#fecaca" />
 				<rect x="380" y="60" width="110" height="80" rx="14" fill="#fee2e2" />
-				<line x1="140" y1="100" x2="205" y2="100" stroke="#ef4444" strokeWidth="6" />
-				<line x1="315" y1="100" x2="380" y2="100" stroke="#ef4444" strokeWidth="6" />
+				<line
+					x1="140"
+					y1="100"
+					x2="205"
+					y2="100"
+					stroke="#ef4444"
+					strokeWidth="6"
+				/>
+				<line
+					x1="315"
+					y1="100"
+					x2="380"
+					y2="100"
+					stroke="#ef4444"
+					strokeWidth="6"
+				/>
 				<circle cx="85" cy="100" r="18" fill="#111827" />
 				<circle cx="260" cy="100" r="18" fill="#111827" />
 				<circle cx="435" cy="100" r="18" fill="#111827" />
@@ -402,10 +441,24 @@ const VisualTrack = () => (
 	<VisualFrame>
 		<svg viewBox="0 0 520 260" className="w-full h-full">
 			<rect x="40" y="40" width="440" height="180" rx="20" fill="#fff1f2" />
-			<path d="M80 160 C180 80, 320 220, 440 120" fill="none" stroke="#ef4444" strokeWidth="6" />
-			<circle cx="160" cy="120" r="10" fill="#111827" />
-			<circle cx="310" cy="180" r="10" fill="#111827" />
-			<circle cx="410" cy="130" r="10" fill="#111827" />
+			<line
+				x1="80"
+				y1="190"
+				x2="440"
+				y2="190"
+				stroke="#ef4444"
+				strokeWidth="4"
+			/>
+			<line x1="80" y1="190" x2="80" y2="70" stroke="#ef4444" strokeWidth="4" />
+			<polyline
+				points="80,190 160,150 240,120 320,140 400,110 440,100"
+				fill="none"
+				stroke="#111827"
+				strokeWidth="4"
+			/>
+			<circle cx="160" cy="150" r="9" fill="#ef4444" />
+			<circle cx="240" cy="120" r="9" fill="#ef4444" />
+			<circle cx="400" cy="110" r="9" fill="#ef4444" />
 		</svg>
 	</VisualFrame>
 );
@@ -414,8 +467,20 @@ const VisualChart = () => (
 	<VisualFrame>
 		<svg viewBox="0 0 520 260" className="w-full h-full">
 			<rect x="40" y="40" width="440" height="180" rx="16" fill="#fff1f2" />
-			<polyline points="60,190 140,110 220,90 300,130 380,150 460,170" fill="none" stroke="#111827" strokeWidth="4" />
-			<line x1="60" y1="190" x2="460" y2="190" stroke="#ef4444" strokeWidth="4" />
+			<polyline
+				points="60,190 140,110 220,90 300,130 380,150 460,170"
+				fill="none"
+				stroke="#111827"
+				strokeWidth="4"
+			/>
+			<line
+				x1="60"
+				y1="190"
+				x2="460"
+				y2="190"
+				stroke="#ef4444"
+				strokeWidth="4"
+			/>
 			<line x1="60" y1="190" x2="60" y2="70" stroke="#ef4444" strokeWidth="4" />
 		</svg>
 	</VisualFrame>
@@ -425,16 +490,47 @@ const VisualDashboard = () => (
 	<VisualFrame>
 		<div className="grid grid-cols-2 gap-3 h-full">
 			<div className="rounded-xl bg-red-50 border border-red-100 p-3">
-				<div className="h-2 w-16 bg-red-200 rounded mb-3" />
-				<div className="h-20 rounded-lg bg-white border border-red-100" />
+				<div className="text-xs font-semibold text-gray-600 mb-2">Velocity</div>
+				<div className="h-20 rounded-lg bg-white border border-red-100">
+					<svg viewBox="0 0 120 60" className="w-full h-full">
+						<polyline
+							points="8,50 28,32 52,22 76,26 104,18"
+							fill="none"
+							stroke="#111827"
+							strokeWidth="3"
+						/>
+						<circle cx="52" cy="22" r="4" fill="#ef4444" />
+						<circle cx="104" cy="18" r="4" fill="#ef4444" />
+					</svg>
+				</div>
 			</div>
 			<div className="rounded-xl bg-red-50 border border-red-100 p-3">
-				<div className="h-2 w-20 bg-red-200 rounded mb-3" />
-				<div className="h-20 rounded-lg bg-white border border-red-100" />
+				<div className="text-xs font-semibold text-gray-600 mb-2">
+					Acceleration
+				</div>
+				<div className="h-20 rounded-lg bg-white border border-red-100">
+					<svg viewBox="0 0 120 60" className="w-full h-full">
+						<polyline
+							points="8,48 26,18 44,26 64,30 88,36 108,42"
+							fill="none"
+							stroke="#111827"
+							strokeWidth="3"
+						/>
+						<circle cx="26" cy="18" r="4" fill="#ef4444" />
+						<circle cx="88" cy="36" r="4" fill="#ef4444" />
+					</svg>
+				</div>
 			</div>
 			<div className="col-span-2 rounded-xl bg-white border border-red-100 p-3">
-				<div className="h-2 w-24 bg-red-200 rounded mb-3" />
-				<div className="h-20 rounded-lg bg-red-50 border border-red-100" />
+				<div className="text-xs font-semibold text-gray-600 mb-2">Distance</div>
+				<div className="h-20 rounded-lg bg-red-50 border border-red-100">
+					<svg viewBox="0 0 240 60" className="w-full h-full">
+						<rect x="16" y="34" width="32" height="16" fill="#fca5a5" />
+						<rect x="64" y="28" width="32" height="22" fill="#f87171" />
+						<rect x="112" y="20" width="32" height="30" fill="#ef4444" />
+						<rect x="160" y="14" width="32" height="36" fill="#dc2626" />
+					</svg>
+				</div>
 			</div>
 		</div>
 	</VisualFrame>
@@ -444,10 +540,31 @@ const VisualResearch = () => (
 	<VisualFrame>
 		<div className="grid grid-cols-2 gap-3 h-full">
 			{Array.from({ length: 4 }).map((_, idx) => (
-				<div key={idx} className="rounded-lg border border-red-100 bg-white p-4 shadow-sm">
-					<div className="h-2 w-24 bg-red-200 rounded mb-3" />
-					<div className="h-2 w-16 bg-gray-200 rounded mb-2" />
-					<div className="h-2 w-20 bg-gray-200 rounded" />
+				<div
+					key={idx}
+					className="rounded-lg border border-red-100 bg-white p-4 shadow-sm"
+				>
+					<div className="text-xs font-semibold text-gray-600 mb-2">
+						Trial {idx + 1}
+					</div>
+					<svg viewBox="0 0 140 60" className="w-full h-16">
+						<polyline
+							points="6,48 30,34 56,26 82,30 108,22 134,18"
+							fill="none"
+							stroke="#111827"
+							strokeWidth="3"
+						/>
+						<circle cx="30" cy="34" r="4" fill="#ef4444" />
+						<circle cx="108" cy="22" r="4" fill="#ef4444" />
+					</svg>
+					<div className="mt-2 flex flex-wrap gap-1 text-[10px] text-gray-500">
+						<span className="px-2 py-0.5 rounded-full bg-red-50 border border-red-100">
+							IMU
+						</span>
+						<span className="px-2 py-0.5 rounded-full bg-gray-50 border border-gray-200">
+							Encoder
+						</span>
+					</div>
 				</div>
 			))}
 		</div>
@@ -458,11 +575,34 @@ const VisualEnergy = () => (
 	<VisualFrame>
 		<svg viewBox="0 0 520 260" className="w-full h-full">
 			<rect x="40" y="40" width="440" height="180" rx="18" fill="#fff1f2" />
-			<circle cx="140" cy="130" r="40" fill="#fecaca" />
-			<circle cx="260" cy="130" r="40" fill="#fca5a5" />
-			<circle cx="380" cy="130" r="40" fill="#f87171" />
-			<line x1="180" y1="130" x2="220" y2="130" stroke="#ef4444" strokeWidth="6" />
-			<line x1="300" y1="130" x2="340" y2="130" stroke="#ef4444" strokeWidth="6" />
+			<rect x="90" y="140" width="70" height="50" rx="8" fill="#fecaca" />
+			<rect x="225" y="110" width="70" height="80" rx="8" fill="#fca5a5" />
+			<rect x="360" y="90" width="70" height="100" rx="8" fill="#f87171" />
+			<line
+				x1="160"
+				y1="165"
+				x2="225"
+				y2="150"
+				stroke="#ef4444"
+				strokeWidth="6"
+			/>
+			<line
+				x1="295"
+				y1="150"
+				x2="360"
+				y2="140"
+				stroke="#ef4444"
+				strokeWidth="6"
+			/>
+			<text x="90" y="210" fontSize="14" fill="#6b7280">
+				Chemical
+			</text>
+			<text x="225" y="210" fontSize="14" fill="#6b7280">
+				Electrical
+			</text>
+			<text x="360" y="210" fontSize="14" fill="#6b7280">
+				Kinetic
+			</text>
 		</svg>
 	</VisualFrame>
 );
@@ -471,20 +611,89 @@ const VisualImpact = () => (
 	<VisualFrame>
 		<svg viewBox="0 0 520 260" className="w-full h-full">
 			<rect x="40" y="40" width="440" height="180" rx="18" fill="#fff1f2" />
-			<circle cx="170" cy="140" r="40" fill="#111827" />
-			<circle cx="340" cy="140" r="40" fill="#ef4444" />
-			<path d="M230 140 L290 140" stroke="#ef4444" strokeWidth="8" />
-			<path d="M260 90 L280 110 L250 120 L270 140 L240 150" stroke="#111827" strokeWidth="5" fill="none" />
+			<rect x="90" y="120" width="120" height="50" rx="10" fill="#111827" />
+			<circle cx="120" cy="175" r="12" fill="#374151" />
+			<circle cx="180" cy="175" r="12" fill="#374151" />
+			<rect x="310" y="120" width="120" height="50" rx="10" fill="#ef4444" />
+			<circle cx="340" cy="175" r="12" fill="#fecaca" />
+			<circle cx="400" cy="175" r="12" fill="#fecaca" />
+			<polygon
+				points="260,110 272,138 300,135 278,154 288,182 260,166 232,182 242,154 220,135 248,138"
+				fill="#f97316"
+			/>
+			<line
+				x1="210"
+				y1="145"
+				x2="240"
+				y2="145"
+				stroke="#ef4444"
+				strokeWidth="6"
+			/>
+			<polygon points="240,145 230,139 230,151" fill="#ef4444" />
+			<line
+				x1="280"
+				y1="145"
+				x2="310"
+				y2="145"
+				stroke="#ef4444"
+				strokeWidth="6"
+			/>
+			<polygon points="280,145 290,139 290,151" fill="#ef4444" />
 		</svg>
 	</VisualFrame>
 );
 
 const VisualCode = () => (
 	<VisualFrame>
-		<div className="h-full grid grid-cols-1 gap-3">
-			{Array.from({ length: 5 }).map((_, idx) => (
-				<div key={idx} className="h-6 rounded bg-gray-100 border border-gray-200" />
-			))}
+		<div className="h-full grid grid-cols-2 gap-3">
+			<div className="space-y-2">
+				{[
+					["const", "dt", "= 0.2;"],
+					["a", "=", "imu.accel;"],
+					["v", "+=", "a * dt;"],
+					["F", "=", "m * a;"],
+					["KE", "=", "0.5 * m * v * v;"],
+				].map((parts, idx) => (
+					<div
+						key={idx}
+						className="h-6 rounded bg-gray-100 border border-gray-200 flex items-center gap-2 px-2 text-xs"
+					>
+						<span className="text-red-600 font-semibold">{parts[0]}</span>
+						<span className="text-gray-700">{parts[1]}</span>
+						<span className="text-gray-500">{parts[2]}</span>
+					</div>
+				))}
+			</div>
+			<div className="rounded-lg bg-red-50 border border-red-100 p-3 flex flex-col gap-2">
+				<div className="text-xs font-semibold text-gray-600">
+					Live data packet
+				</div>
+				<div className="grid grid-cols-2 gap-2 text-[11px] text-gray-600">
+					<div className="bg-white rounded border border-red-100 px-2 py-1">
+						v = 1.8 m/s
+					</div>
+					<div className="bg-white rounded border border-red-100 px-2 py-1">
+						a = 0.6 m/s²
+					</div>
+					<div className="bg-white rounded border border-red-100 px-2 py-1">
+						F = 0.9 N
+					</div>
+					<div className="bg-white rounded border border-red-100 px-2 py-1">
+						KE = 0.52 J
+					</div>
+				</div>
+				<div className="flex-1 rounded bg-white border border-red-100 p-2">
+					<svg viewBox="0 0 140 50" className="w-full h-full">
+						<polyline
+							points="4,40 28,28 52,24 76,20 100,26 136,18"
+							fill="none"
+							stroke="#111827"
+							strokeWidth="3"
+						/>
+						<circle cx="76" cy="20" r="4" fill="#ef4444" />
+					</svg>
+				</div>
+			</div>
 		</div>
 	</VisualFrame>
 );
@@ -496,7 +705,14 @@ const VisualSensor = () => (
 			<rect x="300" y="60" width="160" height="140" rx="16" fill="#fecaca" />
 			<circle cx="140" cy="130" r="26" fill="#111827" />
 			<circle cx="380" cy="130" r="26" fill="#111827" />
-			<line x1="186" y1="130" x2="300" y2="130" stroke="#ef4444" strokeWidth="6" />
+			<line
+				x1="220"
+				y1="130"
+				x2="300"
+				y2="130"
+				stroke="#ef4444"
+				strokeWidth="6"
+			/>
 		</svg>
 	</VisualFrame>
 );
@@ -505,10 +721,15 @@ const VisualSignal = () => (
 	<VisualFrame>
 		<svg viewBox="0 0 520 260" className="w-full h-full">
 			<rect x="60" y="40" width="400" height="180" rx="18" fill="#fff1f2" />
-			<path d="M100 170 Q160 90 220 170 T340 170 T460 170" fill="none" stroke="#111827" strokeWidth="4" />
-			{[120, 200, 280, 360, 440].map((x) => (
-				<circle key={x} cx={x} cy={x % 160 === 0 ? 140 : 170} r="8" fill="#ef4444" />
-			))}
+			<polyline
+				points="80,130 140,90 200,130 260,170 320,130 380,90 440,130"
+				fill="none"
+				stroke="#111827"
+				strokeWidth="4"
+			/>
+			<circle cx="140" cy="90" r="8" fill="#ef4444" />
+			<circle cx="260" cy="170" r="8" fill="#ef4444" />
+			<circle cx="380" cy="90" r="8" fill="#ef4444" />
 		</svg>
 	</VisualFrame>
 );
@@ -516,12 +737,60 @@ const VisualSignal = () => (
 const VisualChecklist = () => (
 	<VisualFrame>
 		<div className="space-y-4">
-			{["w-40", "w-48", "w-44", "w-36"].map((widthClass, idx) => (
+			{[
+				{ label: "WiFi connected", width: "w-40" },
+				{ label: "Dashboard open", width: "w-48" },
+				{ label: "Run acceleration test", width: "w-44" },
+				{ label: "Show collision spike", width: "w-36" },
+			].map((item, idx) => (
 				<div key={idx} className="flex items-center gap-3">
-					<div className="h-6 w-6 rounded-full bg-green-500" />
-					<div className={`h-2 bg-gray-200 rounded ${widthClass}`} />
+					<div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+						✓
+					</div>
+					<div className="flex-1">
+						<div className="text-sm text-gray-700">{item.label}</div>
+						<div className={`h-2 bg-gray-200 rounded ${item.width} mt-2`} />
+					</div>
 				</div>
 			))}
+		</div>
+	</VisualFrame>
+);
+
+const InteractiveChecklist = ({ items, checkedMap, onToggle }) => (
+	<VisualFrame>
+		<div className="space-y-5">
+			{items.map((label) => {
+				const checked = !!checkedMap[label];
+				return (
+					<button
+						key={label}
+						type="button"
+						onClick={() => onToggle(label)}
+						className="w-full flex items-start gap-4 text-left group"
+						aria-pressed={checked}
+					>
+						<div
+							className={`h-9 w-9 rounded-full border flex items-center justify-center text-sm font-bold transition-all ${
+								checked
+									? "bg-green-500 border-green-500 text-white scale-100"
+									: "bg-white border-gray-300 text-transparent scale-95"
+							}`}
+						>
+							✓
+						</div>
+						<div className="flex-1">
+							<div className="text-sm font-medium text-gray-800">{label}</div>
+							<div className="mt-2 h-2 rounded-full bg-gray-200 overflow-hidden">
+								<div
+									className="h-full bg-green-500 transition-all duration-500 ease-out"
+									style={{ width: checked ? "100%" : "0%" }}
+								/>
+							</div>
+						</div>
+					</button>
+				);
+			})}
 		</div>
 	</VisualFrame>
 );
@@ -530,7 +799,11 @@ const SlideVisual = ({ type, imageUrl }) => {
 	if (imageUrl) {
 		return (
 			<VisualFrame>
-				<img src={imageUrl} alt="Slide visual" className="w-full h-full object-cover rounded-xl" />
+				<img
+					src={imageUrl}
+					alt="Slide visual"
+					className="w-full h-full object-cover rounded-xl"
+				/>
 			</VisualFrame>
 		);
 	}
@@ -573,19 +846,37 @@ const SpeakerBadge = ({ speaker }) => (
 	</div>
 );
 
-const Slide = ({ slide, className }) => {
+const DEFAULT_CHECKLIST_ITEMS = [
+	"WiFi connected",
+	"Dashboard open",
+	"Run acceleration test",
+	"Show collision spike",
+];
+
+const Slide = ({ slide, className, checklistState, onToggleChecklist }) => {
 	if (!slide) return null;
 
 	if (slide.layout === "title") {
 		return (
-			<div className={`page-card p-8 sm:p-12 text-center min-h-[60vh] flex flex-col items-center justify-center gap-4 ${className || ""}`}>
+			<div
+				className={`page-card p-8 sm:p-12 text-center min-h-[60vh] flex flex-col items-center justify-center gap-4 ${className || ""}`}
+			>
 				{slide.speaker && <SpeakerBadge speaker={slide.speaker} />}
-				<h1 className="text-4xl sm:text-5xl font-bold text-gray-900">{slide.title}</h1>
-				{slide.subtitle && <p className="text-lg sm:text-xl text-gray-600 max-w-2xl">{slide.subtitle}</p>}
+				<h1 className="text-4xl sm:text-5xl font-bold text-gray-900">
+					{slide.title}
+				</h1>
+				{slide.subtitle && (
+					<p className="text-lg sm:text-xl text-gray-600 max-w-2xl">
+						{slide.subtitle}
+					</p>
+				)}
 				{slide.tags && slide.tags.length > 0 && (
 					<div className="flex flex-wrap items-center justify-center gap-2 mt-2">
 						{slide.tags.map((tag) => (
-							<span key={tag} className="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+							<span
+								key={tag}
+								className="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold"
+							>
 								{tag}
 							</span>
 						))}
@@ -612,10 +903,16 @@ const Slide = ({ slide, className }) => {
 		const visualPlacement = slide.visualPlacement === "top" ? "top" : "bottom";
 
 		return (
-			<div className={`page-card p-6 sm:p-10 min-h-[60vh] flex flex-col gap-6 ${className || ""}`}>
+			<div
+				className={`page-card p-6 sm:p-10 min-h-[60vh] flex flex-col gap-6 ${className || ""}`}
+			>
 				<div className="flex flex-wrap items-center justify-between gap-3">
 					<div>
-						{slide.kicker && <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-2">{slide.kicker}</p>}
+						{slide.kicker && (
+							<p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-2">
+								{slide.kicker}
+							</p>
+						)}
 						<h2 className="text-3xl font-bold text-gray-900">{slide.title}</h2>
 					</div>
 					{slide.speaker && <SpeakerBadge speaker={slide.speaker} />}
@@ -623,8 +920,13 @@ const Slide = ({ slide, className }) => {
 				{visualPlacement === "top" && visualBlock}
 				<div className={`grid grid-cols-1 ${columnsClass} gap-4`}>
 					{cards.map((card) => (
-						<div key={card.title} className="rounded-xl border border-red-100 bg-white p-4 shadow-sm">
-							<h3 className="text-lg font-semibold text-gray-900 mb-2">{card.title}</h3>
+						<div
+							key={card.title}
+							className="rounded-xl border border-red-100 bg-white p-4 shadow-sm"
+						>
+							<h3 className="text-lg font-semibold text-gray-900 mb-2">
+								{card.title}
+							</h3>
 							<p className="text-sm text-gray-600">{card.text}</p>
 						</div>
 					))}
@@ -635,16 +937,33 @@ const Slide = ({ slide, className }) => {
 	}
 
 	const showVisual = slide.visual || slide.imageUrl;
+	const checklistItems =
+		slide.visual === "checklist"
+			? slide.checklistItems ||
+				(slide.bullets && slide.bullets.length > 0
+					? slide.bullets
+					: DEFAULT_CHECKLIST_ITEMS)
+			: null;
 	const visualBlock = showVisual ? (
 		<div className="w-full h-full">
-			<SlideVisual type={slide.visual} imageUrl={slide.imageUrl} />
+			{slide.visual === "checklist" ? (
+				<InteractiveChecklist
+					items={checklistItems || DEFAULT_CHECKLIST_ITEMS}
+					checkedMap={checklistState}
+					onToggle={onToggleChecklist}
+				/>
+			) : (
+				<SlideVisual type={slide.visual} imageUrl={slide.imageUrl} />
+			)}
 		</div>
 	) : null;
 	const textBlock = (
 		<div className="space-y-4">
 			{slide.speaker && <SpeakerBadge speaker={slide.speaker} />}
 			<h2 className="text-3xl font-bold text-gray-900">{slide.title}</h2>
-			{slide.subtitle && <p className="text-lg text-gray-600">{slide.subtitle}</p>}
+			{slide.subtitle && (
+				<p className="text-lg text-gray-600">{slide.subtitle}</p>
+			)}
 			<ul className="space-y-2 text-gray-700 list-disc list-inside">
 				{(slide.bullets || []).map((bullet, idx) => (
 					<li key={`${bullet}-${idx}`} className="text-base">
@@ -657,7 +976,9 @@ const Slide = ({ slide, className }) => {
 	const isVisualLeft = slide.visualPosition === "left";
 
 	return (
-		<div className={`page-card p-6 sm:p-10 min-h-[60vh] grid grid-cols-1 ${showVisual ? "lg:grid-cols-2" : ""} gap-6 items-center ${className || ""}`}>
+		<div
+			className={`page-card p-6 sm:p-10 min-h-[60vh] grid grid-cols-1 ${showVisual ? "lg:grid-cols-2" : ""} gap-6 items-center ${className || ""}`}
+		>
 			{showVisual ? (
 				<>
 					{isVisualLeft ? visualBlock : textBlock}
@@ -681,6 +1002,8 @@ export default function Presentation() {
 	const [newSlideLayout, setNewSlideLayout] = useState("split");
 	const [saveStatus, setSaveStatus] = useState("idle");
 	const [isHydrated, setIsHydrated] = useState(false);
+	const [demoChecklist, setDemoChecklist] = useState({});
+	const [slideIntro, setSlideIntro] = useState(false);
 	const stageRef = useRef(null);
 	const lastSavedRef = useRef("");
 
@@ -743,7 +1066,8 @@ export default function Presentation() {
 			setIsFullscreen(document.fullscreenElement === stageRef.current);
 		};
 		document.addEventListener("fullscreenchange", handleFullscreen);
-		return () => document.removeEventListener("fullscreenchange", handleFullscreen);
+		return () =>
+			document.removeEventListener("fullscreenchange", handleFullscreen);
 	}, []);
 
 	const total = slidesState.length;
@@ -778,17 +1102,30 @@ export default function Presentation() {
 
 	const activeSlide = useMemo(
 		() => slidesState[index] || slidesState[0],
-		[index, slidesState]
+		[index, slidesState],
 	);
+
+	useEffect(() => {
+		if (!isFullscreen) {
+			setSlideIntro(true);
+			return;
+		}
+		setSlideIntro(false);
+		const id = requestAnimationFrame(() => setSlideIntro(true));
+		return () => cancelAnimationFrame(id);
+	}, [activeSlide?.id, isFullscreen]);
 
 	const updateSlide = (patch) => {
 		setSlidesState((prev) =>
-			prev.map((item, idx) => (idx === index ? { ...item, ...patch } : item))
+			prev.map((item, idx) => (idx === index ? { ...item, ...patch } : item)),
 		);
 	};
 
 	const updateBullets = (bullets) => updateSlide({ bullets });
 	const updateCards = (cards) => updateSlide({ cards });
+	const toggleChecklistItem = (label) => {
+		setDemoChecklist((prev) => ({ ...prev, [label]: !prev[label] }));
+	};
 
 	const handleAddSlide = () => {
 		const newSlide = createSlide(newSlideLayout);
@@ -833,20 +1170,88 @@ export default function Presentation() {
 	};
 
 	const tagLines = (activeSlide?.tags || []).join(", ");
+	const zoomOutSlideIds = new Set([
+		"qais-2",
+		"abdul-1",
+		"abdul-2",
+		"coding",
+		"hast-1",
+		"hast-2",
+	]);
+	const shouldZoomOut = isFullscreen && zoomOutSlideIds.has(activeSlide?.id);
+	const baseScale = shouldZoomOut ? 0.84 : 1;
+
+	const transitionVariants = [
+		"fade",
+		"slide-up",
+		"slide-right",
+		"slide-left",
+		"zoom",
+	];
+	const getSlideHash = (value = "") => {
+		let hash = 0;
+		for (let i = 0; i < value.length; i += 1) {
+			hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+		}
+		return hash;
+	};
+	const transitionVariant = activeSlide?.id
+		? transitionVariants[
+				getSlideHash(activeSlide.id) % transitionVariants.length
+			]
+		: "fade";
+
+	const getIntroTransform = (variant, scale, isActive) => {
+		const base = `scale(${scale})`;
+		if (isActive) return base;
+		switch (variant) {
+			case "slide-up":
+				return `${base} translateY(26px)`;
+			case "slide-right":
+				return `${base} translateX(-28px)`;
+			case "slide-left":
+				return `${base} translateX(28px)`;
+			case "zoom":
+				return `scale(${scale * 0.94})`;
+			case "fade":
+			default:
+				return base;
+		}
+	};
+
+	const slideTransform = getIntroTransform(
+		transitionVariant,
+		baseScale,
+		slideIntro,
+	);
 
 	return (
 		<div className="min-h-screen flex flex-col">
 			<div className="flex-1">
-				<div className={isFullscreen ? "" : "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12"}>
+				<div
+					className={
+						isFullscreen ? "" : "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
+					}
+				>
 					{!isFullscreen && (
 						<div className="flex flex-wrap items-center justify-between gap-4 mb-6">
 							<div>
-								<h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Presentation Slideshow</h1>
-								<p className="text-gray-600">Use the arrows or keyboard to navigate.</p>
+								<h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
+									Presentation Slideshow
+								</h1>
+								<p className="text-gray-600">
+									Use the arrows or keyboard to navigate.
+								</p>
 							</div>
 							<div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-								<span>Slide {index + 1} of {total}</span>
-								<span className={saveStatus === "error" ? "text-red-600" : "text-gray-500"}>
+								<span>
+									Slide {index + 1} of {total}
+								</span>
+								<span
+									className={
+										saveStatus === "error" ? "text-red-600" : "text-gray-500"
+									}
+								>
 									{saveStatus === "saving" && "Saving..."}
 									{saveStatus === "saved" && "Saved"}
 									{saveStatus === "error" && "Save failed"}
@@ -867,63 +1272,122 @@ export default function Presentation() {
 						</div>
 					)}
 
-					<div ref={stageRef} className={isFullscreen ? "fixed inset-0 bg-black text-white z-50 flex flex-col" : ""}>
+					<div
+						ref={stageRef}
+						className={
+							isFullscreen
+								? "fixed inset-0 bg-black text-white z-50 flex flex-col"
+								: ""
+						}
+					>
 						{isFullscreen && (
-							<div className="flex items-center justify-between px-6 py-4">
-								<span className="text-sm">Slide {index + 1} of {total}</span>
-								<div className="flex items-center gap-3">
-									<button onClick={handleFullscreenToggle} className="px-4 py-2 rounded-lg border border-white/40 text-white hover:border-white/70 transition-colors">
+							<div className="relative px-6 py-4">
+								<span className="absolute left-1/2 -translate-x-1/2 text-sm tracking-wide whitespace-nowrap">
+									Slide {index + 1} of {total}
+								</span>
+								<div className="flex items-center justify-end gap-3">
+									<button
+										onClick={handleFullscreenToggle}
+										className="px-4 py-2 rounded-lg border border-white/40 text-white hover:border-white/70 transition-colors"
+									>
 										Exit Fullscreen (Esc)
 									</button>
 								</div>
 							</div>
 						)}
-						<div className={isFullscreen ? "flex-1 flex items-center justify-center px-6" : ""}>
-							<div className={isFullscreen ? "w-full max-w-6xl" : ""}>
-								<Slide slide={activeSlide} className={isFullscreen ? "min-h-[70vh]" : ""} />
+						<div
+							className={
+								isFullscreen
+									? "flex-1 flex items-center justify-center px-6"
+									: ""
+							}
+						>
+							<div
+								className={
+									isFullscreen
+										? "w-full max-w-6xl transition-all duration-500 ease-out origin-center will-change-transform"
+										: ""
+								}
+								style={
+									isFullscreen
+										? { transform: slideTransform, opacity: slideIntro ? 1 : 0 }
+										: undefined
+								}
+							>
+								<Slide
+									slide={activeSlide}
+									className={isFullscreen ? "min-h-[70vh]" : ""}
+									checklistState={demoChecklist}
+									onToggleChecklist={toggleChecklistItem}
+								/>
 							</div>
 						</div>
 
-						<div className={isFullscreen ? "px-6 pb-6" : "mt-6"}>
-							<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-								<div className="flex items-center gap-2">
+						{isFullscreen ? (
+							<div className="px-6 pb-6">
+								<div className="relative flex items-center justify-center">
 									<button
 										onClick={goPrev}
 										disabled={index === 0}
-										className={
-											isFullscreen
-												? "px-4 py-2 rounded-lg border border-white/40 text-white hover:border-white/70 transition-colors disabled:opacity-50"
-												: "px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-red-300 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-										}
+										className="absolute left-0 w-40 px-4 py-2 rounded-lg border border-white/40 text-white hover:border-white/70 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-base"
 									>
 										<ArrowLeft className="w-4 h-4" />
-										Previous
+										<span>Previous</span>
 									</button>
+									<div className="flex flex-wrap items-center gap-2">
+										{slidesState.map((item, idx) => (
+											<button
+												key={item.id}
+												onClick={() => setIndex(idx)}
+												className={`h-2.5 w-2.5 rounded-full ${idx === index ? "bg-red-600" : "bg-white/30"}`}
+												aria-label={`Go to slide ${idx + 1}`}
+											/>
+										))}
+									</div>
 									<button
 										onClick={goNext}
 										disabled={index === total - 1}
-										className={
-											isFullscreen
-												? "px-4 py-2 rounded-lg border border-white/40 text-white hover:border-white/70 transition-colors disabled:opacity-50"
-												: "px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-red-300 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-										}
+										className="absolute right-0 w-40 px-4 py-2 rounded-lg border border-white/40 text-white hover:border-white/70 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-base"
 									>
-										Next
+										<span>Next</span>
 										<ArrowRight className="w-4 h-4" />
 									</button>
 								</div>
-								<div className="flex flex-wrap items-center gap-2">
-									{slidesState.map((item, idx) => (
+							</div>
+						) : (
+							<div className="mt-6">
+								<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+									<div className="flex items-center gap-2">
 										<button
-											key={item.id}
-											onClick={() => setIndex(idx)}
-											className={`h-2.5 w-2.5 rounded-full ${idx === index ? "bg-red-600" : isFullscreen ? "bg-white/30" : "bg-gray-300"}`}
-											aria-label={`Go to slide ${idx + 1}`}
-										/>
-									))}
+											onClick={goPrev}
+											disabled={index === 0}
+											className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-red-300 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+										>
+											<ArrowLeft className="w-4 h-4" />
+											Previous
+										</button>
+										<button
+											onClick={goNext}
+											disabled={index === total - 1}
+											className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-red-300 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+										>
+											Next
+											<ArrowRight className="w-4 h-4" />
+										</button>
+									</div>
+									<div className="flex flex-wrap items-center gap-2">
+										{slidesState.map((item, idx) => (
+											<button
+												key={item.id}
+												onClick={() => setIndex(idx)}
+												className={`h-2.5 w-2.5 rounded-full ${idx === index ? "bg-red-600" : "bg-gray-300"}`}
+												aria-label={`Go to slide ${idx + 1}`}
+											/>
+										))}
+									</div>
 								</div>
 							</div>
-						</div>
+						)}
 					</div>
 
 					{editMode && !isFullscreen && (
@@ -931,10 +1395,15 @@ export default function Presentation() {
 							<div className="grid grid-cols-1 lg:grid-cols-[260px,1fr] gap-6">
 								<div className="space-y-4">
 									<div className="flex items-center justify-between">
-										<h2 className="text-lg font-semibold text-gray-900">Slides</h2>
+										<h2 className="text-lg font-semibold text-gray-900">
+											Slides
+										</h2>
 										<button
 											onClick={() => {
-												if (!window.confirm("Reset the entire deck to default?")) return;
+												if (
+													!window.confirm("Reset the entire deck to default?")
+												)
+													return;
 												setSlidesState(defaultSlides);
 												setIndex(0);
 											}}
@@ -949,8 +1418,11 @@ export default function Presentation() {
 												key={slide.id}
 												onDragOver={(event) => event.preventDefault()}
 												onDrop={() => {
-													if (dragSlideIndex === null || dragSlideIndex === idx) return;
-													setSlidesState((prev) => reorderList(prev, dragSlideIndex, idx));
+													if (dragSlideIndex === null || dragSlideIndex === idx)
+														return;
+													setSlidesState((prev) =>
+														reorderList(prev, dragSlideIndex, idx),
+													);
 													setIndex(idx);
 													setDragSlideIndex(null);
 												}}
@@ -964,7 +1436,10 @@ export default function Presentation() {
 												>
 													::
 												</div>
-												<button onClick={() => setIndex(idx)} className="text-left flex-1 text-sm">
+												<button
+													onClick={() => setIndex(idx)}
+													className="text-left flex-1 text-sm"
+												>
 													{idx + 1}. {slide.title || "Untitled"}
 												</button>
 											</div>
@@ -972,10 +1447,14 @@ export default function Presentation() {
 									</div>
 									<div className="space-y-2">
 										<div>
-											<label className="block text-xs font-medium text-gray-500 mb-2">New slide layout</label>
+											<label className="block text-xs font-medium text-gray-500 mb-2">
+												New slide layout
+											</label>
 											<select
 												value={newSlideLayout}
-												onChange={(event) => setNewSlideLayout(event.target.value)}
+												onChange={(event) =>
+													setNewSlideLayout(event.target.value)
+												}
 												className="w-full px-3 py-2 border border-gray-300 rounded-lg"
 											>
 												<option value="split">Split</option>
@@ -983,7 +1462,10 @@ export default function Presentation() {
 												<option value="title">Title</option>
 											</select>
 										</div>
-										<button onClick={handleAddSlide} className="w-full bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
+										<button
+											onClick={handleAddSlide}
+											className="w-full bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
+										>
 											Add slide
 										</button>
 										<button
@@ -1005,37 +1487,53 @@ export default function Presentation() {
 								<div className="space-y-4">
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+											<label className="block text-sm font-medium text-gray-700 mb-2">
+												Title
+											</label>
 											<input
 												type="text"
 												value={activeSlide?.title || ""}
-												onChange={(event) => updateSlide({ title: event.target.value })}
+												onChange={(event) =>
+													updateSlide({ title: event.target.value })
+												}
 												className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
 											/>
 										</div>
 										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
+											<label className="block text-sm font-medium text-gray-700 mb-2">
+												Subtitle
+											</label>
 											<input
 												type="text"
 												value={activeSlide?.subtitle || ""}
-												onChange={(event) => updateSlide({ subtitle: event.target.value })}
+												onChange={(event) =>
+													updateSlide({ subtitle: event.target.value })
+												}
 												className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
 											/>
 										</div>
 										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2">Speaker</label>
+											<label className="block text-sm font-medium text-gray-700 mb-2">
+												Speaker
+											</label>
 											<input
 												type="text"
 												value={activeSlide?.speaker || ""}
-												onChange={(event) => updateSlide({ speaker: event.target.value })}
+												onChange={(event) =>
+													updateSlide({ speaker: event.target.value })
+												}
 												className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
 											/>
 										</div>
 										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2">Layout</label>
+											<label className="block text-sm font-medium text-gray-700 mb-2">
+												Layout
+											</label>
 											<select
 												value={activeSlide?.layout || "split"}
-												onChange={(event) => updateSlide({ layout: event.target.value })}
+												onChange={(event) =>
+													updateSlide({ layout: event.target.value })
+												}
 												className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
 											>
 												<option value="title">Title</option>
@@ -1044,10 +1542,14 @@ export default function Presentation() {
 											</select>
 										</div>
 										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2">Visual style</label>
+											<label className="block text-sm font-medium text-gray-700 mb-2">
+												Visual style
+											</label>
 											<select
 												value={activeSlide?.visual || ""}
-												onChange={(event) => updateSlide({ visual: event.target.value })}
+												onChange={(event) =>
+													updateSlide({ visual: event.target.value })
+												}
 												className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
 											>
 												<option value="">None</option>
@@ -1067,17 +1569,23 @@ export default function Presentation() {
 											</select>
 										</div>
 										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2">Image URL (optional)</label>
+											<label className="block text-sm font-medium text-gray-700 mb-2">
+												Image URL (optional)
+											</label>
 											<input
 												type="text"
 												value={activeSlide?.imageUrl || ""}
-												onChange={(event) => updateSlide({ imageUrl: event.target.value })}
+												onChange={(event) =>
+													updateSlide({ imageUrl: event.target.value })
+												}
 												placeholder="https://..."
 												className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
 											/>
 										</div>
 										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2">Tags (comma separated)</label>
+											<label className="block text-sm font-medium text-gray-700 mb-2">
+												Tags (comma separated)
+											</label>
 											<input
 												type="text"
 												value={tagLines}
@@ -1093,20 +1601,28 @@ export default function Presentation() {
 											/>
 										</div>
 										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2">Kicker (cards layout)</label>
+											<label className="block text-sm font-medium text-gray-700 mb-2">
+												Kicker (cards layout)
+											</label>
 											<input
 												type="text"
 												value={activeSlide?.kicker || ""}
-												onChange={(event) => updateSlide({ kicker: event.target.value })}
+												onChange={(event) =>
+													updateSlide({ kicker: event.target.value })
+												}
 												className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
 											/>
 										</div>
 										{activeSlide?.layout === "split" && (
 											<div>
-												<label className="block text-sm font-medium text-gray-700 mb-2">Visual position</label>
+												<label className="block text-sm font-medium text-gray-700 mb-2">
+													Visual position
+												</label>
 												<select
 													value={activeSlide?.visualPosition || "right"}
-													onChange={(event) => updateSlide({ visualPosition: event.target.value })}
+													onChange={(event) =>
+														updateSlide({ visualPosition: event.target.value })
+													}
 													className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
 												>
 													<option value="left">Visual left</option>
@@ -1116,11 +1632,17 @@ export default function Presentation() {
 										)}
 										{activeSlide?.layout === "cards" && (
 											<div>
-												<label className="block text-sm font-medium text-gray-700 mb-2">Cards layout</label>
+												<label className="block text-sm font-medium text-gray-700 mb-2">
+													Cards layout
+												</label>
 												<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 													<select
 														value={activeSlide?.cardColumns || 3}
-														onChange={(event) => updateSlide({ cardColumns: Number(event.target.value) })}
+														onChange={(event) =>
+															updateSlide({
+																cardColumns: Number(event.target.value),
+															})
+														}
 														className="w-full px-4 py-2 border border-gray-300 rounded-lg"
 													>
 														<option value={2}>2 columns</option>
@@ -1129,7 +1651,11 @@ export default function Presentation() {
 													</select>
 													<select
 														value={activeSlide?.visualPlacement || "bottom"}
-														onChange={(event) => updateSlide({ visualPlacement: event.target.value })}
+														onChange={(event) =>
+															updateSlide({
+																visualPlacement: event.target.value,
+															})
+														}
 														className="w-full px-4 py-2 border border-gray-300 rounded-lg"
 													>
 														<option value="top">Visual top</option>
@@ -1143,54 +1669,81 @@ export default function Presentation() {
 									{activeSlide?.layout === "split" && (
 										<div>
 											<div className="flex items-center justify-between mb-2">
-												<label className="text-sm font-medium text-gray-700">Bullets (drag to reorder)</label>
+												<label className="text-sm font-medium text-gray-700">
+													Bullets (drag to reorder)
+												</label>
 												<button
-													onClick={() => updateBullets([...(activeSlide.bullets || []), "New bullet"])}
+													onClick={() =>
+														updateBullets([
+															...(activeSlide.bullets || []),
+															"New bullet",
+														])
+													}
 													className="text-xs text-red-600 hover:text-red-700"
 												>
 													Add bullet
 												</button>
 											</div>
 											<div className="space-y-2">
-												{(activeSlide.bullets || []).map((bullet, bulletIndex) => (
-													<div
-														key={`${bullet}-${bulletIndex}`}
-														onDragOver={(event) => event.preventDefault()}
-														onDrop={() => {
-															if (dragBulletIndex === null || dragBulletIndex === bulletIndex) return;
-															updateBullets(reorderList(activeSlide.bullets || [], dragBulletIndex, bulletIndex));
-															setDragBulletIndex(null);
-														}}
-														className="flex items-center gap-2"
-													>
+												{(activeSlide.bullets || []).map(
+													(bullet, bulletIndex) => (
 														<div
-															draggable
-															onDragStart={() => setDragBulletIndex(bulletIndex)}
-															onDragEnd={() => setDragBulletIndex(null)}
-															className="text-gray-400 cursor-move"
-														>
-															::
-														</div>
-														<input
-															type="text"
-															value={bullet}
-															onChange={(event) => {
-																const updated = [...(activeSlide.bullets || [])];
-																updated[bulletIndex] = event.target.value;
-																updateBullets(updated);
+															key={`${bullet}-${bulletIndex}`}
+															onDragOver={(event) => event.preventDefault()}
+															onDrop={() => {
+																if (
+																	dragBulletIndex === null ||
+																	dragBulletIndex === bulletIndex
+																)
+																	return;
+																updateBullets(
+																	reorderList(
+																		activeSlide.bullets || [],
+																		dragBulletIndex,
+																		bulletIndex,
+																	),
+																);
+																setDragBulletIndex(null);
 															}}
-															className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
-														/>
-														<button
-															onClick={() =>
-																updateBullets((activeSlide.bullets || []).filter((_, idx) => idx !== bulletIndex))
-															}
-															className="text-xs text-red-600 hover:text-red-700"
+															className="flex items-center gap-2"
 														>
-															Remove
-														</button>
-													</div>
-												))}
+															<div
+																draggable
+																onDragStart={() =>
+																	setDragBulletIndex(bulletIndex)
+																}
+																onDragEnd={() => setDragBulletIndex(null)}
+																className="text-gray-400 cursor-move"
+															>
+																::
+															</div>
+															<input
+																type="text"
+																value={bullet}
+																onChange={(event) => {
+																	const updated = [
+																		...(activeSlide.bullets || []),
+																	];
+																	updated[bulletIndex] = event.target.value;
+																	updateBullets(updated);
+																}}
+																className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+															/>
+															<button
+																onClick={() =>
+																	updateBullets(
+																		(activeSlide.bullets || []).filter(
+																			(_, idx) => idx !== bulletIndex,
+																		),
+																	)
+																}
+																className="text-xs text-red-600 hover:text-red-700"
+															>
+																Remove
+															</button>
+														</div>
+													),
+												)}
 											</div>
 										</div>
 									)}
@@ -1198,11 +1751,16 @@ export default function Presentation() {
 									{activeSlide?.layout === "cards" && (
 										<div>
 											<div className="flex items-center justify-between mb-2">
-												<label className="text-sm font-medium text-gray-700">Cards (drag to reorder)</label>
+												<label className="text-sm font-medium text-gray-700">
+													Cards (drag to reorder)
+												</label>
 												<button
 													onClick={() =>
-														updateCards([...(activeSlide.cards || []), { title: "Card title", text: "Card text" }])
-												}
+														updateCards([
+															...(activeSlide.cards || []),
+															{ title: "Card title", text: "Card text" },
+														])
+													}
 													className="text-xs text-red-600 hover:text-red-700"
 												>
 													Add card
@@ -1214,8 +1772,18 @@ export default function Presentation() {
 														key={`${card.title}-${cardIndex}`}
 														onDragOver={(event) => event.preventDefault()}
 														onDrop={() => {
-															if (dragCardIndex === null || dragCardIndex === cardIndex) return;
-															updateCards(reorderList(activeSlide.cards || [], dragCardIndex, cardIndex));
+															if (
+																dragCardIndex === null ||
+																dragCardIndex === cardIndex
+															)
+																return;
+															updateCards(
+																reorderList(
+																	activeSlide.cards || [],
+																	dragCardIndex,
+																	cardIndex,
+																),
+															);
 															setDragCardIndex(null);
 														}}
 														className="border border-gray-200 rounded-lg p-3 space-y-2"
@@ -1233,16 +1801,25 @@ export default function Presentation() {
 																type="text"
 																value={card.title}
 																onChange={(event) => {
-																	const updated = [...(activeSlide.cards || [])];
-																	updated[cardIndex] = { ...updated[cardIndex], title: event.target.value };
+																	const updated = [
+																		...(activeSlide.cards || []),
+																	];
+																	updated[cardIndex] = {
+																		...updated[cardIndex],
+																		title: event.target.value,
+																	};
 																	updateCards(updated);
 																}}
 																className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
 															/>
 															<button
 																onClick={() =>
-																	updateCards((activeSlide.cards || []).filter((_, idx) => idx !== cardIndex))
-															}
+																	updateCards(
+																		(activeSlide.cards || []).filter(
+																			(_, idx) => idx !== cardIndex,
+																		),
+																	)
+																}
 																className="text-xs text-red-600 hover:text-red-700"
 															>
 																Remove
@@ -1252,7 +1829,10 @@ export default function Presentation() {
 															value={card.text}
 															onChange={(event) => {
 																const updated = [...(activeSlide.cards || [])];
-																updated[cardIndex] = { ...updated[cardIndex], text: event.target.value };
+																updated[cardIndex] = {
+																	...updated[cardIndex],
+																	text: event.target.value,
+																};
 																updateCards(updated);
 															}}
 															className="w-full px-3 py-2 border border-gray-300 rounded-lg min-h-[90px]"
